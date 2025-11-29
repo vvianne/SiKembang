@@ -12,13 +12,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -69,10 +69,10 @@ fun HomeScreen() {
             Spacer(modifier = Modifier.height(24.dp))
             MenuGridSection()
             Spacer(modifier = Modifier.height(24.dp))
-            EducationSectionHeader()
-            Spacer(modifier = Modifier.height(12.dp))
-            EducationModuleCard()
-            Spacer(modifier = Modifier.height(24.dp))
+//            EducationSectionHeader()
+//            Spacer(modifier = Modifier.height(12.dp))
+//            EducationModuleCard()
+//            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
@@ -113,12 +113,6 @@ fun TopHeaderSection() {
                 )
             }
         }
-        Icon(
-            imageVector = Icons.Outlined.Notifications,
-            contentDescription = "Notifikasi",
-            modifier = Modifier.size(28.dp),
-            tint = TextDark
-        )
     }
 }
 
@@ -223,14 +217,14 @@ fun MenuGridSection() {
     ) {
         // Kartu Kiri: Jurnal
         MenuCard(
-            text = "Jurnal",
-            icon = Icons.Default.Menu,
+            text = "Masukkan Jurnal",
+            icon = Icons.Default.AddCircle,
             modifier = Modifier.weight(1f)
         )
         // Kartu Kanan: Peta
         MenuCard(
-            text = "Peta Posyandu",
-            icon = Icons.Default.PlayArrow,
+            text = "Posyandu Terdekat",
+            icon = Icons.Default.Place,
             modifier = Modifier.weight(1f)
         )
     }
@@ -261,77 +255,77 @@ fun MenuCard(text: String, icon: androidx.compose.ui.graphics.vector.ImageVector
     }
 }
 
-// 6. Header Section Edukasi
-@Composable
-fun EducationSectionHeader() {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "Modul Edukasi",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = TextDark
-        )
-        Text(
-            text = "Lihat Selengkapnya",
-            fontSize = 12.sp,
-            color = PrimaryPurple,
-            fontWeight = FontWeight.SemiBold
-        )
-    }
-}
+//// 6. Header Section Edukasi
+//@Composable
+//fun EducationSectionHeader() {
+//    Row(
+//        modifier = Modifier.fillMaxWidth(),
+//        horizontalArrangement = Arrangement.SpaceBetween,
+//        verticalAlignment = Alignment.CenterVertically
+//    ) {
+//        Text(
+//            text = "Modul Edukasi",
+//            fontSize = 18.sp,
+//            fontWeight = FontWeight.Bold,
+//            color = TextDark
+//        )
+//        Text(
+//            text = "Lihat Selengkapnya",
+//            fontSize = 12.sp,
+//            color = PrimaryPurple,
+//            fontWeight = FontWeight.SemiBold
+//        )
+//    }
+//}
 
-// 7. Modul Edukasi Card
-@Composable
-fun EducationModuleCard() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(140.dp)
-            .clip(RoundedCornerShape(16.dp))
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.img_edukasi),
-            contentDescription = "Background Edukasi",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.matchParentSize()
-        )
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "Edukasi Anak",
-                color = Color.White.copy(alpha = 0.8f),
-                fontSize = 12.sp
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = "Modul Kreativitas & Imajinasi\nUsia 1–3 Tahun",
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
-                lineHeight = 22.sp
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "Menstimulasi daya imajinasi melalui bermain dan bercerita",
-                color = Color.White.copy(alpha = 0.9f),
-                fontSize = 11.sp,
-                lineHeight = 14.sp
-            )
-        }
-    }
-}
+//// 7. Modul Edukasi Card
+//@Composable
+//fun EducationModuleCard() {
+//    Box(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .height(140.dp)
+//            .clip(RoundedCornerShape(16.dp))
+//    ) {
+//        Image(
+//            painter = painterResource(id = R.drawable.img_edukasi),
+//            contentDescription = "Background Edukasi",
+//            contentScale = ContentScale.Crop,
+//            modifier = Modifier.matchParentSize()
+//        )
+//
+//        Column(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .padding(16.dp),
+//            verticalArrangement = Arrangement.Center
+//        ) {
+//            Text(
+//                text = "Edukasi Anak",
+//                color = Color.White.copy(alpha = 0.8f),
+//                fontSize = 12.sp
+//            )
+//            Spacer(modifier = Modifier.height(4.dp))
+//
+//            Text(
+//                text = "Modul Kreativitas & Imajinasi\nUsia 1–3 Tahun",
+//                color = Color.White,
+//                fontWeight = FontWeight.Bold,
+//                fontSize = 16.sp,
+//                lineHeight = 22.sp
+//            )
+//
+//            Spacer(modifier = Modifier.height(8.dp))
+//
+//            Text(
+//                text = "Menstimulasi daya imajinasi melalui bermain dan bercerita",
+//                color = Color.White.copy(alpha = 0.9f),
+//                fontSize = 11.sp,
+//                lineHeight = 14.sp
+//            )
+//        }
+//    }
+//}
 
 // 8. Bottom Navigation Bar
 @Composable
