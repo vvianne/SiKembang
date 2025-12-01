@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "685605614532",
+    "project_id": "sikembang-b8f6d",
+    "storage_bucket": "sikembang-b8f6d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:685605614532:android:5dc21c3f0a3fec33216a91",
+        "android_client_info": {
+          "package_name": "com.example.sikembang"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcZjyBujoDdZoTWvZexHL_iD4ZRsQoW8M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

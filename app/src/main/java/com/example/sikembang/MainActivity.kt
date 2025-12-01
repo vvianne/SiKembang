@@ -1,8 +1,10 @@
 package com.example.sikembang
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -13,19 +15,17 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.sikembang.ui.theme.SiKembangTheme
+import java.time.LocalDate
 
 // --- Warna Kustom (Sesuai Gambar) ---
 val PrimaryPurple = Color(0xFF9580FF)
@@ -35,20 +35,59 @@ val TextGray = Color(0xFF888888)
 val LightPurpleBg = Color(0xFFF2F0FF)
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
-                HomeScreen()
+                MainNavigation()
             }
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HomeScreen() {
+fun MainNavigation() {
+    var currentScreen by remember { mutableStateOf("home") }
+    var selectedDateForJournal by remember { mutableStateOf<LocalDate?>(null) }
+
+    when (currentScreen) {
+        "home" -> HomeScreen(
+            onNavigateToJurnal = { currentScreen = "jurnal" },
+            onNavigateToPeta = { currentScreen = "peta" }
+        )
+        "jurnal" -> JurnalScreen(
+            onNavigateToHome = { currentScreen = "home" },
+            onNavigateToPeta = { currentScreen = "peta" },
+            selectedDateForJournal = selectedDateForJournal,
+            onNavigateToTambahJurnal = { selectedDate ->
+                selectedDateForJournal = selectedDate
+                currentScreen = "tambah_jurnal"
+            }
+        )
+        "peta" -> PetaScreen(
+            onNavigateToHome = { currentScreen = "home" },
+            onNavigateToJurnal = { currentScreen = "jurnal" }
+        )
+        "tambah_jurnal" -> TambahJurnalScreen(
+            selectedDate = selectedDateForJournal,
+            onNavigateBack = { currentScreen = "jurnal" }
+        )
+    }
+}
+
+@Composable
+fun HomeScreen(onNavigateToJurnal: () -> Unit, onNavigateToPeta: () -> Unit) {
     Scaffold(
-        bottomBar = { BottomNavigationBar() },
+        bottomBar = {
+            BottomNavigationBar(
+                selectedScreen = "home",
+                onHomeClick = { },
+                onJurnalClick = onNavigateToJurnal,
+                onPetaClick = onNavigateToPeta
+            )
+        },
         containerColor = Color.White
     ) { paddingValues ->
         Column(
@@ -67,12 +106,11 @@ fun HomeScreen() {
             Spacer(modifier = Modifier.height(8.dp))
             PagerIndicator()
             Spacer(modifier = Modifier.height(24.dp))
-            MenuGridSection()
+            MenuGridSection(
+                onJurnalClick = onNavigateToJurnal,
+                onPetaClick = onNavigateToPeta
+            )
             Spacer(modifier = Modifier.height(24.dp))
-//            EducationSectionHeader()
-//            Spacer(modifier = Modifier.height(12.dp))
-//            EducationModuleCard()
-//            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
@@ -112,6 +150,13 @@ fun TopHeaderSection() {
                     color = TextGray
                 )
             }
+        }
+        IconButton(onClick = { }) {
+            Icon(
+                imageVector = Icons.Default.Notifications,
+                contentDescription = "Notifikasi",
+                tint = TextDark
+            )
         }
     }
 }
@@ -210,7 +255,7 @@ fun PagerIndicator() {
 
 // 5. Menu Grid (Jurnal & Peta Posyandu)
 @Composable
-fun MenuGridSection() {
+fun MenuGridSection(onJurnalClick: () -> Unit, onPetaClick: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -219,23 +264,29 @@ fun MenuGridSection() {
         MenuCard(
             text = "Masukkan Jurnal",
             icon = Icons.Default.AddCircle,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            onClick = onJurnalClick
         )
         // Kartu Kanan: Peta
         MenuCard(
             text = "Posyandu Terdekat",
             icon = Icons.Default.Place,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            onClick = onPetaClick
         )
     }
 }
 
 @Composable
-fun MenuCard(text: String, icon: androidx.compose.ui.graphics.vector.ImageVector, modifier: Modifier = Modifier) {
+fun MenuCard(
+    text: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
+) {
     Button(
-        onClick = {},
-        modifier = modifier
-            .height(100.dp),
+        onClick = onClick,
+        modifier = modifier.height(100.dp),
         shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.buttonColors(containerColor = PrimaryPurple)
     ) {
@@ -255,81 +306,14 @@ fun MenuCard(text: String, icon: androidx.compose.ui.graphics.vector.ImageVector
     }
 }
 
-//// 6. Header Section Edukasi
-//@Composable
-//fun EducationSectionHeader() {
-//    Row(
-//        modifier = Modifier.fillMaxWidth(),
-//        horizontalArrangement = Arrangement.SpaceBetween,
-//        verticalAlignment = Alignment.CenterVertically
-//    ) {
-//        Text(
-//            text = "Modul Edukasi",
-//            fontSize = 18.sp,
-//            fontWeight = FontWeight.Bold,
-//            color = TextDark
-//        )
-//        Text(
-//            text = "Lihat Selengkapnya",
-//            fontSize = 12.sp,
-//            color = PrimaryPurple,
-//            fontWeight = FontWeight.SemiBold
-//        )
-//    }
-//}
-
-//// 7. Modul Edukasi Card
-//@Composable
-//fun EducationModuleCard() {
-//    Box(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .height(140.dp)
-//            .clip(RoundedCornerShape(16.dp))
-//    ) {
-//        Image(
-//            painter = painterResource(id = R.drawable.img_edukasi),
-//            contentDescription = "Background Edukasi",
-//            contentScale = ContentScale.Crop,
-//            modifier = Modifier.matchParentSize()
-//        )
-//
-//        Column(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .padding(16.dp),
-//            verticalArrangement = Arrangement.Center
-//        ) {
-//            Text(
-//                text = "Edukasi Anak",
-//                color = Color.White.copy(alpha = 0.8f),
-//                fontSize = 12.sp
-//            )
-//            Spacer(modifier = Modifier.height(4.dp))
-//
-//            Text(
-//                text = "Modul Kreativitas & Imajinasi\nUsia 1–3 Tahun",
-//                color = Color.White,
-//                fontWeight = FontWeight.Bold,
-//                fontSize = 16.sp,
-//                lineHeight = 22.sp
-//            )
-//
-//            Spacer(modifier = Modifier.height(8.dp))
-//
-//            Text(
-//                text = "Menstimulasi daya imajinasi melalui bermain dan bercerita",
-//                color = Color.White.copy(alpha = 0.9f),
-//                fontSize = 11.sp,
-//                lineHeight = 14.sp
-//            )
-//        }
-//    }
-//}
-
 // 8. Bottom Navigation Bar
 @Composable
-fun BottomNavigationBar() {
+fun BottomNavigationBar(
+    selectedScreen: String,
+    onHomeClick: () -> Unit,
+    onJurnalClick: () -> Unit,
+    onPetaClick: () -> Unit
+) {
     NavigationBar(
         containerColor = Color.White,
         tonalElevation = 8.dp
@@ -337,41 +321,71 @@ fun BottomNavigationBar() {
         NavigationBarItem(
             icon = { Icon(Icons.Default.Home, contentDescription = "Beranda") },
             label = { Text("Beranda") },
-            selected = true,
-            onClick = { },
+            selected = selectedScreen == "home",
+            onClick = onHomeClick,
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = PrimaryPurple,
                 selectedTextColor = PrimaryPurple,
+                unselectedIconColor = TextGray,
+                unselectedTextColor = TextGray,
                 indicatorColor = Color.Transparent
             )
         )
         NavigationBarItem(
             icon = { Icon(Icons.Default.List, contentDescription = "Jurnal") },
             label = { Text("Jurnal") },
-            selected = false,
-            onClick = { },
+            selected = selectedScreen == "jurnal",
+            onClick = onJurnalClick,
             colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = PrimaryPurple,
+                selectedTextColor = PrimaryPurple,
                 unselectedIconColor = TextGray,
-                unselectedTextColor = TextGray
+                unselectedTextColor = TextGray,
+                indicatorColor = Color.Transparent
             )
         )
         NavigationBarItem(
             icon = { Icon(Icons.Default.Place, contentDescription = "Peta") },
             label = { Text("Peta") },
-            selected = false,
-            onClick = { },
+            selected = selectedScreen == "peta",
+            onClick = onPetaClick,
             colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = PrimaryPurple,
+                selectedTextColor = PrimaryPurple,
                 unselectedIconColor = TextGray,
-                unselectedTextColor = TextGray
+                unselectedTextColor = TextGray,
+                indicatorColor = Color.Transparent
             )
         )
     }
 }
 
-@Preview(showBackground = true)
+// Placeholder untuk Halaman Peta
 @Composable
-fun DefaultPreview() {
-    MaterialTheme {
-        HomeScreen()
+fun PetaScreen(onNavigateToHome: () -> Unit, onNavigateToJurnal: () -> Unit) {
+    Scaffold(
+        bottomBar = {
+            BottomNavigationBar(
+                selectedScreen = "peta",
+                onHomeClick = onNavigateToHome,
+                onJurnalClick = onNavigateToJurnal,
+                onPetaClick = { }
+            )
+        },
+        containerColor = Color.White
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Halaman Peta\n(Coming Soon)",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = TextGray
+            )
+        }
     }
 }
