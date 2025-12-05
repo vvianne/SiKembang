@@ -210,17 +210,17 @@ val bannerList = listOf(
     BannerItem(
         imageRes = R.drawable.banner_kids,
         title = "Stimulasi Motorik Halus\nTingkatkan Kreativitas",
-        description = "Rutin bermain balok atau menggambar pada usia 1-3 tahun..."
+        description = "Rutin bermain balok atau menggambar pada usia 1-3 tahun dapat meningkatkan motorik."
     ),
     BannerItem(
-        imageRes = R.drawable.banner_kids,
+        imageRes = R.drawable.banner_kids_1,
         title = "Pentingnya Imunisasi\nUntuk Kekebalan Tubuh",
-        description = "Lindungi si kecil dari berbagai penyakit berbahaya sejak dini..."
+        description = "Lindungi si kecil dari berbagai penyakit berbahaya sejak dini dengan rutin imunisasi."
     ),
     BannerItem(
-        imageRes = R.drawable.banner_kids,
+        imageRes = R.drawable.banner_kids_2,
         title = "Makanan Bergizi\nCegah Stunting",
-        description = "Penuhi asupan protein hewani dan sayuran untuk tumbuh kembang..."
+        description = "Penuhi asupan protein hewani dan sayuran untuk tumbuh kembang si kecil, ayo cegah stunting!"
     )
 )
 
