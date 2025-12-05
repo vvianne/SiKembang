@@ -89,20 +89,21 @@ fun DetailPosyanduScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues)
-                        .padding(horizontal = 20.dp), // Padding kiri-kanan
-                    verticalArrangement = Arrangement.spacedBy(16.dp) // Jarak antar item otomatis
+                        .padding(horizontal = 20.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
 
                     // Item 1: Header Profil
                     item {
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(20.dp))
                         TopHeaderSection()
+                        Spacer(modifier = Modifier.height(20.dp))
                         TextButton(
                             onClick = onNavigateBack,
-                            contentPadding = PaddingValues(0.dp)
+                            contentPadding = PaddingValues(8.dp)
                         ) {
                             Icon(Icons.Default.ArrowBack, "Kembali", tint = TextGray, modifier = Modifier.size(18.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
                             Text("Kembali ke Daftar", color = TextGray)
                         }
                     }
@@ -290,7 +291,7 @@ fun HeaderCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(180.dp),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -325,7 +326,7 @@ fun HeaderCard(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Surface(
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(12.dp),
                         color = Color(posyandu.getStatusColor())
                     ) {
                         Text(
@@ -364,7 +365,7 @@ fun HeaderCard(
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
-                                .clip(RoundedCornerShape(8.dp))
+                                .clip(RoundedCornerShape(12.dp))
                                 .background(Color.White.copy(alpha = 0.3f)) // Background rating sedikit lebih terang
                                 .padding(horizontal = 12.dp, vertical = 6.dp)
                         ) {
@@ -398,7 +399,7 @@ fun HeaderCard(
 fun InfoChip(icon: androidx.compose.ui.graphics.vector.ImageVector, text: String) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.clip(RoundedCornerShape(8.dp)).background(Color.White.copy(alpha = 0.2f)).padding(horizontal = 12.dp, vertical = 6.dp)
+        modifier = Modifier.clip(RoundedCornerShape(12.dp)).background(Color.White.copy(alpha = 0.2f)).padding(horizontal = 12.dp, vertical = 6.dp)
     ) {
         Icon(icon, null, tint = Color.White, modifier = Modifier.size(16.dp))
         Spacer(modifier = Modifier.width(6.dp))

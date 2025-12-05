@@ -148,7 +148,7 @@ fun JurnalScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(150.dp)
-                        .clip(RoundedCornerShape(16.dp))
+                        .clip(RoundedCornerShape(12.dp))
                         .background(Color(0xFFF8F8F8)),
                     contentAlignment = Alignment.Center
                 ) {
@@ -239,7 +239,7 @@ fun CalendarSection(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(12.dp))
             .background(Color(0xFFF8F8F8))
             .padding(16.dp)
     ) {
@@ -383,7 +383,7 @@ fun JournalEntryCard(journal: JournalEntry) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(12.dp))
             .background(PrimaryPurple)
     ) {
         Row(
@@ -405,7 +405,7 @@ fun JournalEntryCard(journal: JournalEntry) {
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White.copy(alpha = 0.25f)
                 ),
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(12.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
                 modifier = Modifier.height(32.dp)
             ) {

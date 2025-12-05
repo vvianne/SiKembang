@@ -27,6 +27,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sikembang.ui.screen.*
 import java.time.LocalDate
+import androidx.compose.foundation.pager.*
+import kotlinx.coroutines.delay
+import androidx.compose.foundation.interaction.DragInteraction
 
 val PrimaryPurple = Color(0xFF9580FF)
 val BackgroundWhite = Color(0xFFF9F9F9)
@@ -115,8 +118,6 @@ fun HomeScreen(onNavigateToJurnal: () -> Unit, onNavigateToPeta: () -> Unit) {
             SearchBar()
             Spacer(modifier = Modifier.height(24.dp))
             BannerSection()
-            Spacer(modifier = Modifier.height(8.dp))
-            PagerIndicator()
             Spacer(modifier = Modifier.height(24.dp))
             MenuGridSection(
                 onJurnalClick = onNavigateToJurnal,
@@ -197,72 +198,131 @@ fun SearchBar() {
 }
 
 // 3. Banner Utama (Stimulasi Motorik)
+// Data Class untuk konten Banner
+data class BannerItem(
+    val imageRes: Int,
+    val title: String,
+    val description: String
+)
+
+// List Data Dummy
+val bannerList = listOf(
+    BannerItem(
+        imageRes = R.drawable.banner_kids,
+        title = "Stimulasi Motorik Halus\nTingkatkan Kreativitas",
+        description = "Rutin bermain balok atau menggambar pada usia 1-3 tahun..."
+    ),
+    BannerItem(
+        imageRes = R.drawable.banner_kids,
+        title = "Pentingnya Imunisasi\nUntuk Kekebalan Tubuh",
+        description = "Lindungi si kecil dari berbagai penyakit berbahaya sejak dini..."
+    ),
+    BannerItem(
+        imageRes = R.drawable.banner_kids,
+        title = "Makanan Bergizi\nCegah Stunting",
+        description = "Penuhi asupan protein hewani dan sayuran untuk tumbuh kembang..."
+    )
+)
+
 @Composable
 fun BannerSection() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(180.dp)
-            .clip(RoundedCornerShape(16.dp))
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.banner_kids),
-            contentDescription = "Banner Image",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.matchParentSize()
-        )
+    val pagerState = androidx.compose.foundation.pager.rememberPagerState(pageCount = { bannerList.size })
+//
+//    val isDraggedState = remember { mutableStateOf(false) }
+//    LaunchedEffect(pagerState) {
+//        pagerState.interactionSource.interactions.collect { interaction ->
+//            when (interaction) {
+//                is DragInteraction.Start -> isDraggedState.value = true
+//                is DragInteraction.Stop, is DragInteraction.Cancel -> isDraggedState.value = false
+//            }
+//        }
+//    }
+//    val isDragged = isDraggedState.value
+//
+//    LaunchedEffect(pagerState.currentPage) {
+//        if (isDragged) return@LaunchedEffect
+//
+//        delay(3000)
+//        val nextPage = (pagerState.currentPage + 1) % bannerList.size
+//        pagerState.animateScrollToPage(nextPage)
+//    }
 
-        Column(
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        HorizontalPager(
+            state = pagerState,
             modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "Stimulasi Motorik Halus\nTingkatkan Kreativitas Anak",
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
-                lineHeight = 22.sp
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Rutin bermain balok atau menggambar\npada usia 1-3 tahun dapat membantu...",
-                color = Color.White.copy(alpha = 0.9f),
-                fontSize = 12.sp,
-                lineHeight = 16.sp
-            )
+                .fillMaxWidth()
+                .height(180.dp)
+        ) { page ->
+            val banner = bannerList[page]
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 4.dp)
+                    .clip(RoundedCornerShape(12.dp))
+            ) {
+                Image(
+                    painter = painterResource(id = banner.imageRes),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.matchParentSize()
+                )
+
+//                // Overlay gelap
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxSize()
+//                        .background(Color.Black.copy(alpha = 0.3f))
+//                )
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(20.dp),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = banner.title,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        lineHeight = 22.sp
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = banner.description,
+                        color = Color.White.copy(alpha = 0.9f),
+                        fontSize = 12.sp,
+                        lineHeight = 16.sp,
+                        maxLines = 2
+                    )
+                }
+            }
         }
-    }
-}
+        Spacer(modifier = Modifier.height(8.dp))
 
 // 4. Pager Indicator (Titik-titik di bawah banner)
-@Composable
-fun PagerIndicator() {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Box(
+        Row(
             modifier = Modifier
-                .size(10.dp)
-                .clip(CircleShape)
-                .background(PrimaryPurple)
-        )
-        Spacer(modifier = Modifier.width(6.dp))
-        Box(
-            modifier = Modifier
-                .size(10.dp)
-                .clip(CircleShape)
-                .background(Color.LightGray)
-        )
-        Spacer(modifier = Modifier.width(6.dp))
-        Box(
-            modifier = Modifier
-                .size(10.dp)
-                .clip(CircleShape)
-                .background(Color.LightGray)
-        )
+                .wrapContentHeight()
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            repeat(pagerState.pageCount) { iteration ->
+                val color = if (pagerState.currentPage == iteration) PrimaryPurple else Color.LightGray
+                Box(
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .clip(CircleShape)
+                        .background(color)
+                        .size(if (pagerState.currentPage == iteration) 12.dp else 8.dp) // Yang aktif lebih besar dikit
+                )
+            }
+        }
     }
 }
 
@@ -300,7 +360,7 @@ fun MenuCard(
     Button(
         onClick = onClick,
         modifier = modifier.height(100.dp),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(12.dp),
         colors = ButtonDefaults.buttonColors(containerColor = PrimaryPurple)
     ) {
         Column(

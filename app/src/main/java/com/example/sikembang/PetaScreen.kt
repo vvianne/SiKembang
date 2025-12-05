@@ -112,7 +112,7 @@ fun PetaScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(300.dp)
-                        .clip(RoundedCornerShape(16.dp))
+                        .clip(RoundedCornerShape(12.dp))
                         .background(Color.LightGray)
                 ) {
                     if (isLocationPermissionGranted) {
