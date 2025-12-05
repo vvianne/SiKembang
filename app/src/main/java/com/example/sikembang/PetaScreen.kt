@@ -41,7 +41,7 @@ data class PosyanduSimple(
     val id: String,
     val nama: String,
     val alamat: String,
-    val lokasi: GeoPoint // Pakai GeoPoint milik OSM
+    val lokasi: GeoPoint
 )
 
 @Composable
@@ -52,7 +52,7 @@ fun PetaScreen(
 ) {
     val context = LocalContext.current
 
-    // Konfigurasi User Agent (Wajib buat OSM)
+    // Konfigurasi User Agent
     Configuration.getInstance().userAgentValue = context.packageName
 
     // 1. Data Dummy (Lokasi Malang & Bandung)
@@ -102,11 +102,11 @@ fun PetaScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
                 TopHeaderSection()
             }
 
-            // BAGIAN PETA (OSM DROID)
+            // Peta (OSM DROID)
             item {
                 Box(
                     modifier = Modifier
@@ -123,13 +123,13 @@ fun PetaScreen(
                                     setMultiTouchControls(true)
                                     controller.setZoom(15.0)
 
-                                    // 1. Tambah Titik Biru (Lokasi User)
+                                    // 1. Lokasi User
                                     val locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(ctx), this)
                                     locationOverlay.enableMyLocation()
-                                    locationOverlay.enableFollowLocation() // Kamera ngikutin user
+                                    locationOverlay.enableFollowLocation()
                                     overlays.add(locationOverlay)
 
-                                    // 2. Tambah Marker Posyandu
+                                    // 2. Marker Posyandu
                                     listPosyandu.forEach { posyandu ->
                                         val marker = Marker(this)
                                         marker.position = posyandu.lokasi

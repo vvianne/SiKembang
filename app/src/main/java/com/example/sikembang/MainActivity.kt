@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.sp
 import com.example.sikembang.ui.screen.*
 import java.time.LocalDate
 
-// --- Warna Kustom (Sesuai Gambar) ---
 val PrimaryPurple = Color(0xFF9580FF)
 val BackgroundWhite = Color(0xFFF9F9F9)
 val TextDark = Color(0xFF333333)
@@ -124,6 +123,7 @@ fun HomeScreen(onNavigateToJurnal: () -> Unit, onNavigateToPeta: () -> Unit) {
                 onPetaClick = onNavigateToPeta
             )
             Spacer(modifier = Modifier.height(24.dp))
+            UlasanSection()
         }
     }
 }
@@ -373,32 +373,41 @@ fun BottomNavigationBar(
     }
 }
 
-// Placeholder untuk Halaman Peta
+// 9. Ulasan (Tambahan)
 @Composable
-fun PetaScreen(onNavigateToHome: () -> Unit, onNavigateToJurnal: () -> Unit) {
-    Scaffold(
-        bottomBar = {
-            BottomNavigationBar(
-                selectedScreen = "peta",
-                onHomeClick = onNavigateToHome,
-                onJurnalClick = onNavigateToJurnal,
-                onPetaClick = { }
-            )
-        },
-        containerColor = Color.White
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentAlignment = Alignment.Center
+fun UlasanSection() {
+    SectionCard(title = "Apa Kata Bunda?") {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            UlasanItem("Bunda Ani", "Pelayanannya sangat ramah, bidannya sabar banget jelasin gizi anak.", 5)
+            Divider(color = Color.LightGray.copy(alpha = 0.5f))
+            UlasanItem("Bunda Siti", "Tempatnya bersih dan nyaman buat balita. Mainannya banyak!", 5)
+        }
+    }
+}
+
+@Composable
+fun UlasanItem(nama: String, komen: String, bintang: Int) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.Top
+    ) {
+        Surface(
+            modifier = Modifier.size(40.dp),
+            shape = CircleShape,
+            color = Color.LightGray
         ) {
-            Text(
-                text = "Halaman Peta\n(Coming Soon)",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = TextGray
-            )
+            Icon(Icons.Default.Person, null, tint = Color.White, modifier = Modifier.padding(8.dp))
+        }
+        Spacer(modifier = Modifier.width(12.dp))
+        Column {
+            Text(nama, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = TextDark)
+            Row {
+                repeat(bintang) {
+                    Icon(Icons.Default.Star, null, tint = Color(0xFFFFC107), modifier = Modifier.size(14.dp))
+                }
+            }
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(komen, fontSize = 13.sp, color = TextGray, lineHeight = 18.sp)
         }
     }
 }

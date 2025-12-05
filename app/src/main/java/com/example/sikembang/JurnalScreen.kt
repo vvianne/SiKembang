@@ -48,7 +48,6 @@ fun JurnalScreen(
     val repository = remember { JournalRepository() }
     val coroutineScope = rememberCoroutineScope()
 
-    // Load journals when selectedDate changes
     LaunchedEffect(selectedDate) {
         isLoading = true
         val result = repository.getJournalsByDate(selectedDate)
@@ -58,7 +57,6 @@ fun JurnalScreen(
         isLoading = false
     }
 
-    // Update selectedDate when selectedDateForJournal changes
     LaunchedEffect(selectedDateForJournal) {
         if (selectedDateForJournal != null) {
             selectedDate = selectedDateForJournal
@@ -149,7 +147,7 @@ fun JurnalScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp)
+                        .height(150.dp)
                         .clip(RoundedCornerShape(16.dp))
                         .background(Color(0xFFF8F8F8)),
                     contentAlignment = Alignment.Center

@@ -24,7 +24,6 @@ class PosyanduLokasiViewModel(
     fun loadPosyanduById(id: String) {
         viewModelScope.launch {
             _isLoading.value = true
-            // 🫣 fake load, nanti diganti API / DB
             _selectedPosyandu.value = AlamatPosyandu(
                 id = id,
                 namaPosyandu = "Posyandu Ceria",

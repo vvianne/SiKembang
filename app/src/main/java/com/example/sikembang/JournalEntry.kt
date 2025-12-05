@@ -29,10 +29,10 @@ data class JournalEntry(
     // Untuk Firestore (SESUAIKAN dengan field name di Repository)
     fun toMap(): Map<String, Any> {
         return hashMapOf(
-            "tanggal" to date,              // ✅ Ubah "date" → "tanggal"
-            "tanggalString" to dateString,   // ✅ Ubah "dateString" → "tanggalString"
+            "tanggal" to date,
+            "tanggalString" to dateString,
             "deskripsi" to deskripsi,
-            "fotoURL" to photoUrl,           // ✅ Ubah "photoUrl" → "fotoURL"
+            "fotoURL" to photoUrl,
             "cretedAt" to cretedAt           // ✅ Ubah "createdAt" → "cretedAt"
         )
     }

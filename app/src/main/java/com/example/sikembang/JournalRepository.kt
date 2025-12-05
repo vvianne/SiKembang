@@ -18,9 +18,7 @@ class JournalRepository {
     private val storage = FirebaseStorage.getInstance()
     private val journalsCollection = firestore.collection("jurnal_Sikembang")
 
-    // -------------------------
-    // UPLOAD PHOTO
-    // -------------------------
+    // 1. Upload Photo
     suspend fun uploadPhoto(imageUri: Uri): Result<String> {
         return try {
             val fileName = "journal_photos/${UUID.randomUUID()}.jpg"
@@ -30,46 +28,6 @@ class JournalRepository {
             val downloadUrl = storageRef.downloadUrl.await()
 
             Result.success(downloadUrl.toString())
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    // -------------------------
-    // SAVE JOURNAL
-    // -------------------------
-    @RequiresApi(Build.VERSION_CODES.O)
-    suspend fun saveJournal(
-        date: LocalDate,
-        deskripsi: String,
-        photoUri: Uri
-    ): Result<String> {
-        return try {
-            // 1. Upload photo
-            val uploaded = uploadPhoto(photoUri)
-            if (uploaded.isFailure) return Result.failure(uploaded.exceptionOrNull()!!)
-            val photoUrl = uploaded.getOrNull()!!
-
-            // 2. Convert LocalDate → Timestamp
-            val timestamp = Timestamp(
-                Date.from(
-                    date.atStartOfDay(ZoneId.systemDefault()).toInstant()
-                )
-            )
-
-            // 3. Create journal entry (DISAMAKAN DENGAN FIRESTORE)
-            val journalEntry = mapOf(
-                "tanggal" to timestamp,
-                "tanggalString" to date.toString(),
-                "deskripsi" to deskripsi,
-                "fotoURL" to photoUrl,
-                "cretedAt" to Timestamp.now()  // sesuai Firestore kamu
-            )
-
-            // 4. Save to Firestore
-            val docRef = journalsCollection.add(journalEntry).await()
-
-            Result.success(docRef.id)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -117,13 +75,48 @@ class JournalRepository {
         }
     }
 
-    // -------------------------
-    // GET ALL JOURNALS
-    // -------------------------
+    // 2. Save Journal
+    @RequiresApi(Build.VERSION_CODES.O)
+    suspend fun saveJournal(
+        date: LocalDate,
+        deskripsi: String,
+        photoUri: Uri
+    ): Result<String> {
+        return try {
+            // 1. Upload photo
+            val uploaded = uploadPhoto(photoUri)
+            if (uploaded.isFailure) return Result.failure(uploaded.exceptionOrNull()!!)
+            val photoUrl = uploaded.getOrNull()!!
+
+            // 2. Convert LocalDate → Timestamp
+            val timestamp = Timestamp(
+                Date.from(
+                    date.atStartOfDay(ZoneId.systemDefault()).toInstant()
+                )
+            )
+
+            // 3. Create journal entry (DISAMAKAN DENGAN FIRESTORE)
+            val journalEntry = mapOf(
+                "tanggal" to timestamp,
+                "tanggalString" to date.toString(),
+                "deskripsi" to deskripsi,
+                "fotoURL" to photoUrl,
+                "cretedAt" to Timestamp.now()  // sesuai Firestore
+            )
+
+            // 4. Save to Firestore
+            val docRef = journalsCollection.add(journalEntry).await()
+
+            Result.success(docRef.id)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // 3. Get All Journals
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun getAllJournals(): Result<List<JournalEntry>> {
         return try {
-            // ORDER BY sesuai Firestore: "cretedAt"
             val snapshot = journalsCollection
                 .orderBy("cretedAt", Query.Direction.DESCENDING)
                 .get()
@@ -136,7 +129,7 @@ class JournalRepository {
                     dateString = doc.getString("tanggalString") ?: "",
                     deskripsi = doc.getString("deskripsi") ?: "",
                     photoUrl = doc.getString("fotoURL") ?: "",
-                    cretedAt = doc.getTimestamp("cretedAt") ?: Timestamp.now()  // ✅ Pakai "cretedAt"
+                    cretedAt = doc.getTimestamp("cretedAt") ?: Timestamp.now()
                 )
             }
 
@@ -146,9 +139,7 @@ class JournalRepository {
         }
     }
 
-    // -------------------------
-    // DELETE JOURNAL
-    // -------------------------
+    // 4. Delete Journal
     suspend fun deleteJournal(journalId: String): Result<Unit> {
         return try {
             journalsCollection.document(journalId).delete().await()
@@ -158,9 +149,7 @@ class JournalRepository {
         }
     }
 
-    // -------------------------
-    // UPDATE JOURNAL
-    // -------------------------
+    // 5. Update Journal
     suspend fun updateJournal(
         journalId: String,
         deskripsi: String

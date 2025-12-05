@@ -85,7 +85,6 @@ fun DetailPosyanduScreen(
             }
         } else {
             selectedPosyandu?.let { posyandu ->
-                // PERUBAHAN UTAMA: Menggunakan LazyColumn agar otomatis bisa di-scroll
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
@@ -213,7 +212,7 @@ fun DetailPosyanduScreen(
 @Composable
 fun TopHeaderSection() {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -232,12 +231,25 @@ fun TopHeaderSection() {
             }
             Spacer(modifier = Modifier.width(12.dp))
             Column {
-                Text("Halo, Suarni!", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = TextDark)
-                Text("Ayo pantau kondisi anakmu!", fontSize = 12.sp, color = TextGray)
+                Text(
+                    text = "Halo, Suarni!",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = TextDark
+                )
+                Text(
+                    text = "Ayo pantau kondisi anakmu!",
+                    fontSize = 12.sp,
+                    color = TextGray
+                )
             }
         }
         IconButton(onClick = { }) {
-            Icon(Icons.Default.Notifications, "Notifikasi", tint = TextDark)
+            Icon(
+                imageVector = Icons.Default.Notifications,
+                contentDescription = "Notifikasi",
+                tint = TextDark
+            )
         }
     }
 }
@@ -270,36 +282,112 @@ fun BottomNavigationBar(selectedScreen: String, onHomeClick: () -> Unit, onJurna
 }
 
 @Composable
-fun HeaderCard(posyandu: AlamatPosyandu, userLocation: android.location.Location?) {
+fun HeaderCard(
+    posyandu: AlamatPosyandu,
+    userLocation: android.location.Location?
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(180.dp),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = PrimaryPurple)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
-            Text(posyandu.namaPosyandu, fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color.White)
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Surface(shape = RoundedCornerShape(8.dp), color = Color(posyandu.getStatusColor())) {
-                    Text(posyandu.getStatusBuka(), fontSize = 12.sp, color = Color.White, modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp))
-                }
-                if (posyandu.rating > 0) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clip(RoundedCornerShape(8.dp)).background(Color.White.copy(alpha = 0.2f)).padding(horizontal = 12.dp, vertical = 6.dp)
+        Box(modifier = Modifier.fillMaxSize()) {
+            // 1. Gambar Latar Belakang
+            Image(
+                painter = painterResource(id = R.drawable.posyandu),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+
+            // 2. Overlay Warna Ungu Transparan
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(PrimaryPurple.copy(alpha = 0.7f))
+            )
+
+            // 3. Konten Kartu
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text(
+                        text = posyandu.namaPosyandu,
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = Color(posyandu.getStatusColor())
                     ) {
-                        Icon(Icons.Default.Star, null, tint = Color(0xFFFFC107), modifier = Modifier.size(18.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(String.format("%.1f", posyandu.rating), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                        Text(" (${posyandu.jumlahUlasan})", fontSize = 12.sp, color = Color.White.copy(alpha = 0.8f))
+                        Text(
+                            text = posyandu.getStatusBuka(),
+                            fontSize = 12.sp,
+                            color = Color.White,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                        )
                     }
                 }
-            }
-            if (userLocation != null) {
-                Spacer(modifier = Modifier.height(12.dp))
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    InfoChip(Icons.Default.NearMe, posyandu.getJarakFormat(userLocation.latitude, userLocation.longitude))
-                    InfoChip(Icons.Default.Schedule, posyandu.getEstimasiWaktu(userLocation.latitude, userLocation.longitude))
+
+                // Bagian Bawah: Jarak, Waktu, dan Rating
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Kiri: Jarak & Waktu
+                    if (userLocation != null) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            InfoChip(
+                                Icons.Default.NearMe,
+                                posyandu.getJarakFormat(userLocation.latitude, userLocation.longitude)
+                            )
+                            InfoChip(
+                                Icons.Default.Schedule,
+                                posyandu.getEstimasiWaktu(userLocation.latitude, userLocation.longitude)
+                            )
+                        }
+                    } else {
+                        Spacer(modifier = Modifier.width(1.dp))
+                    }
+
+                    // Kanan: Rating
+                    if (posyandu.rating > 0) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Color.White.copy(alpha = 0.3f)) // Background rating sedikit lebih terang
+                                .padding(horizontal = 12.dp, vertical = 6.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.Star,
+                                null,
+                                tint = Color(0xFFFFC107),
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = String.format("%.1f", posyandu.rating),
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                            Text(
+                                text = " (${posyandu.jumlahUlasan})",
+                                fontSize = 12.sp,
+                                color = Color.White.copy(alpha = 0.9f)
+                            )
+                        }
+                    }
                 }
             }
         }

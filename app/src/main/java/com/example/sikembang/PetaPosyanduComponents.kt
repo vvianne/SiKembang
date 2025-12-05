@@ -20,9 +20,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sikembang.*
 import com.example.sikembang.data.model.AlamatPosyandu
-//import com.example.sikembang.data.model.PosyanduLengkap
-
-//private val AlamatPosyandu.jamOperasional: Any
 
 @Composable
 fun PosyanduCard(

@@ -63,7 +63,7 @@ data class AlamatPosyandu(
         else String.format("%.1f km", jarak)
     }
 
-    // --- Added Missing Function 1: Estimasi Waktu ---
+    // 1. Estimasi Waktu
     fun getEstimasiWaktu(userLat: Double, userLon: Double): String {
         val jarakKm = hitungJarak(userLat, userLon)
         if (jarakKm == Double.MAX_VALUE) return "-"
@@ -73,12 +73,12 @@ data class AlamatPosyandu(
         return "$waktuMenit min"
     }
 
-    // --- Added Missing Function 2: Maps URL ---
+    // 2. Maps URL
     fun getGoogleMapsUrl(): String {
         return "https://www.google.com/maps/dir/?api=1&destination=$latitude,$longitude"
     }
 
-    // --- Added Missing Function 3: Maps View Intent URL ---
+    // 3. Maps View Intent URL
     fun getGoogleMapsViewUrl(): String {
         return "geo:$latitude,$longitude?q=$latitude,$longitude($namaPosyandu)"
     }
@@ -102,7 +102,7 @@ data class AlamatPosyandu(
         return if (status == Status.AKTIF) "Buka" else "Tutup"
     }
 
-    fun getStatusColor(): Long { // Changed return type to Long for Compose Color
+    fun getStatusColor(): Long {
         return if (status == Status.AKTIF) 0xFF4CAF50 else 0xFFF44336
     }
 }

@@ -12,6 +12,6 @@ class PosyanduLokasiViewModelFactory(
             @Suppress("UNCHECKED_CAST")
             return PosyanduLokasiViewModel(locationHelper) as T
         }
-        throw IllegalArgumentException("Unknown ViewModel class, coba jangan jahil ya 😎")
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
