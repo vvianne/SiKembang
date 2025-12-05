@@ -18,11 +18,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.sikembang.data.model.PosyanduLengkap
+import com.example.sikembang.*
+import com.example.sikembang.data.model.AlamatPosyandu
+//import com.example.sikembang.data.model.PosyanduLengkap
+
+//private val AlamatPosyandu.jamOperasional: Any
 
 @Composable
 fun PosyanduCard(
-    posyandu: PosyanduLengkap,
+    posyandu: AlamatPosyandu,
     userLocation: Location?,
     onClick: () -> Unit,
     onNavigate: () -> Unit
@@ -153,7 +157,7 @@ fun PosyanduCard(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = posyandu.getJarakFormatted(
+                            text = posyandu.getJarakFormat(
                                 userLocation.latitude,
                                 userLocation.longitude
                             ),
@@ -172,7 +176,7 @@ fun PosyanduCard(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = posyandu.getEstimasiWaktu(
+                            text = posyandu.getJarakFormat(
                                 userLocation.latitude,
                                 userLocation.longitude
                             ),
@@ -194,7 +198,7 @@ fun PosyanduCard(
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = "Hari ini: ${posyandu.jamOperasional.getJamHariIni()}",
+                    text = "Hari ini: ${posyandu.jamOperasional.getJamHariIni("Senin")}",
                     fontSize = 12.sp,
                     color = TextGray
                 )
@@ -359,7 +363,7 @@ fun FilterDialog(
 
 @Composable
 fun PosyanduCompactCard(
-    posyandu: PosyanduLengkap,
+    posyandu: AlamatPosyandu,
     userLocation: Location?,
     onClick: () -> Unit
 ) {
@@ -386,7 +390,7 @@ fun PosyanduCompactCard(
                 )
                 if (userLocation != null) {
                     Text(
-                        text = posyandu.getJarakFormatted(
+                        text = posyandu.getJarakFormat(
                             userLocation.latitude,
                             userLocation.longitude
                         ),

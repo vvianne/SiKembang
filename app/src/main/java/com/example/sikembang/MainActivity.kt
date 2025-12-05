@@ -25,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.sikembang.ui.screen.*
 import java.time.LocalDate
 
 // --- Warna Kustom (Sesuai Gambar) ---
@@ -51,6 +52,7 @@ class MainActivity : ComponentActivity() {
 fun MainNavigation() {
     var currentScreen by remember { mutableStateOf("home") }
     var selectedDateForJournal by remember { mutableStateOf<LocalDate?>(null) }
+    var selectedPosyanduId by remember { mutableStateOf<String?>(null) }
 
     when (currentScreen) {
         "home" -> HomeScreen(
@@ -67,6 +69,17 @@ fun MainNavigation() {
             }
         )
         "peta" -> PetaScreen(
+            onNavigateToHome = { currentScreen = "home" },
+            onNavigateToJurnal = { currentScreen = "jurnal" },
+            onPosyanduClick = { idYangDiklik ->
+                selectedPosyanduId = idYangDiklik
+                currentScreen = "detail_posyandu"
+            }
+        )
+
+        "detail_posyandu" -> DetailPosyanduScreen(
+            posyanduId = selectedPosyanduId ?: "1",
+            onNavigateBack = { currentScreen = "peta" },
             onNavigateToHome = { currentScreen = "home" },
             onNavigateToJurnal = { currentScreen = "jurnal" }
         )

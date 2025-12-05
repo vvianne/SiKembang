@@ -42,8 +42,15 @@ android {
 }
 
 dependencies {
+
+    implementation("org.osmdroid:osmdroid-android:6.1.16")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
+    implementation("com.google.android.material:material:1.5.0")
+
     // Gunakan libs reference untuk Firebase
     implementation(platform("com.google.firebase:firebase-bom:34.6.0"))
+    implementation(libs.play.services.location)
     androidTestImplementation(platform("com.google.firebase:firebase-bom:34.6.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-firestore-ktx:25.1.1")
@@ -59,6 +66,8 @@ dependencies {
     implementation("androidx.camera:camera-view:$cameraxVersion")
     implementation("io.coil-kt:coil-compose:2.5.0")
     implementation("androidx.compose.material:material-icons-extended")
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

@@ -1,8 +1,7 @@
-package com.example.sikembang.ui.screen
+package com.example.sikembang.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.sikembang.ui.viewmodel.PosyanduLokasiViewModel
 import com.example.sikembang.utils.LocationHelper
 
 class PosyanduLokasiViewModelFactory(
@@ -11,8 +10,8 @@ class PosyanduLokasiViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(PosyanduLokasiViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return PosyanduLokasiViewModel(locationHelper = locationHelper) as T
+            return PosyanduLokasiViewModel(locationHelper) as T
         }
-        throw IllegalArgumentException("Unknown ViewModel class")
+        throw IllegalArgumentException("Unknown ViewModel class, coba jangan jahil ya 😎")
     }
 }
