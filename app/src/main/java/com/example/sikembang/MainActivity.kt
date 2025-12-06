@@ -25,11 +25,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.sikembang.ui.screen.*
 import java.time.LocalDate
 import androidx.compose.foundation.pager.*
-import kotlinx.coroutines.delay
-import androidx.compose.foundation.interaction.DragInteraction
+import com.example.sikembang.ui.posyandu.DetailPosyanduScreen
+import com.example.sikembang.ui.posyandu.PetaScreen
+import com.example.sikembang.ui.posyandu.SectionCard
 
 val PrimaryPurple = Color(0xFF9580FF)
 val BackgroundWhite = Color(0xFFF9F9F9)
@@ -70,17 +70,18 @@ fun MainNavigation() {
                 currentScreen = "tambah_jurnal"
             }
         )
+
         "peta" -> PetaScreen(
-            onNavigateToHome = { currentScreen = "home" },
-            onNavigateToJurnal = { currentScreen = "jurnal" },
-            onPosyanduClick = { idYangDiklik ->
+            onNavigateToDetail = { idYangDiklik ->
                 selectedPosyanduId = idYangDiklik
                 currentScreen = "detail_posyandu"
-            }
+            },
+            onNavigateToHome = { currentScreen = "home" },
+            onNavigateToJurnal = { currentScreen = "jurnal" }
         )
 
         "detail_posyandu" -> DetailPosyanduScreen(
-            posyanduId = selectedPosyanduId ?: "1",
+            posyanduId = selectedPosyanduId ?: "2", // Default ke ID 2 jika null
             onNavigateBack = { currentScreen = "peta" },
             onNavigateToHome = { currentScreen = "home" },
             onNavigateToJurnal = { currentScreen = "jurnal" }

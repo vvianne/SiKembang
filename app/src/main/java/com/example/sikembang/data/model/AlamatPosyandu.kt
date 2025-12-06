@@ -1,31 +1,53 @@
 package com.example.sikembang.data.model
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class AlamatPosyandu(
-    val id: String = "",
+    val id: Long? = null,
+
+    @SerialName("nama_posyandu")
     val namaPosyandu: String = "",
+
+    @SerialName("alamat_lengkap")
     val alamatLengkap: String = "",
+
     val kelurahan: String = "",
     val kecamatan: String = "",
     val kota: String = "",
     val provinsi: String = "",
+
+    @SerialName("kode_pos")
     val kodePos: String = "",
+
     val latitude: Double? = null,
     val longitude: Double? = null,
     val telepon: String = "",
     val email: String = "",
     val keterangan: String = "",
-    // --- Added missing fields required by UI ---
+
+    @SerialName("penanggung_jawab")
     val penanggungJawab: String = "",
+
     val rating: Double = 0.0,
+
+    @SerialName("jumlah_ulasan")
     val jumlahUlasan: Int = 0,
-    // -------------------------------------------
-    val status: Status = Status.AKTIF,
-    val createdAt: Long = System.currentTimeMillis(),
-    val updatedAt: Long = System.currentTimeMillis(),
+
+    val status: String = "AKTIF",
+
+    @SerialName("jam_operasional")
     val jamOperasional: JamOperasional = JamOperasional(),
+
+    @SerialName("fasilitas_tersedia")
     val fasilitasTersedia: List<String> = emptyList(),
+
+    @SerialName("kegiatan_terbaru")
     val kegiatanTerbaru: String = ""
 ) {
+
+    @Serializable
     data class JamOperasional(
         val senin: String = "Tutup",
         val selasa: String = "Tutup",
@@ -34,7 +56,7 @@ data class AlamatPosyandu(
         val jumat: String = "Tutup",
         val sabtu: String = "Tutup",
         val minggu: String = "Tutup"
-    ){
+    ) {
         fun getJamHariIni(hari: String): String {
             return when(hari.lowercase()) {
                 "senin", "monday" -> senin
@@ -49,10 +71,6 @@ data class AlamatPosyandu(
         }
     }
 
-    enum class Status {
-        AKTIF, NONAKTIF
-    }
-
     fun getAlamatLengkapFormat(): String {
         return "$alamatLengkap, $kelurahan, $kecamatan, $kota, $provinsi $kodePos"
     }
@@ -63,46 +81,39 @@ data class AlamatPosyandu(
         else String.format("%.1f km", jarak)
     }
 
-    // 1. Estimasi Waktu
     fun getEstimasiWaktu(userLat: Double, userLon: Double): String {
         val jarakKm = hitungJarak(userLat, userLon)
         if (jarakKm == Double.MAX_VALUE) return "-"
-        // Assumption: Average speed 40 km/h
         val waktuJam = jarakKm / 40.0
         val waktuMenit = (waktuJam * 60).toInt()
         return "$waktuMenit min"
     }
 
-    // 2. Maps URL
     fun getGoogleMapsUrl(): String {
-        return "https://www.google.com/maps/dir/?api=1&destination=$latitude,$longitude"
+        return "http://maps.google.com/maps?daddr=$latitude,$longitude"
     }
 
-    // 3. Maps View Intent URL
     fun getGoogleMapsViewUrl(): String {
         return "geo:$latitude,$longitude?q=$latitude,$longitude($namaPosyandu)"
     }
 
     private fun hitungJarak(userLat: Double, userLon: Double): Double {
         if (latitude == null || longitude == null) return Double.MAX_VALUE
-
         val earthRadius = 6371.0
         val dLat = Math.toRadians(latitude - userLat)
         val dLon = Math.toRadians(longitude - userLon)
-
         val a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                 Math.cos(Math.toRadians(userLat)) * Math.cos(Math.toRadians(latitude)) *
                 Math.sin(dLon / 2) * Math.sin(dLon / 2)
-
         val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
         return earthRadius * c
     }
 
     fun getStatusBuka(): String {
-        return if (status == Status.AKTIF) "Buka" else "Tutup"
+        return if (status == "AKTIF") "Buka" else "Tutup"
     }
 
     fun getStatusColor(): Long {
-        return if (status == Status.AKTIF) 0xFF4CAF50 else 0xFFF44336
+        return if (status == "AKTIF") 0xFF4CAF50 else 0xFFF44336
     }
 }

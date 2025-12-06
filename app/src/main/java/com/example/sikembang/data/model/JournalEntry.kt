@@ -1,15 +1,15 @@
-package com.example.sikembang
+package com.example.sikembang.data.model
 
+import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.datetime.Instant
 
 @Serializable
 data class JournalEntry(
     val id: String? = null, // ID di-generate otomatis oleh Supabase (UUID)
 
     @SerialName("tanggal")
-    val tanggal: Instant, // Pengganti Timestamp
+    val tanggal: Instant,
 
     @SerialName("tanggalString")
     val tanggalString: String,
@@ -20,6 +20,6 @@ data class JournalEntry(
     @SerialName("fotoURL")
     val fotoURL: String,
 
-    @SerialName("cretedAt") // Sesuai typo di screenshot kamu
+    @SerialName("cretedAt")
     val createdAt: Instant
 )

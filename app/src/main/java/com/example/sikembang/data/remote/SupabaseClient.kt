@@ -1,4 +1,4 @@
-package com.example.sikembang
+package com.example.sikembang.data.remote
 
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
@@ -12,7 +12,7 @@ object SupabaseClient {
         supabaseUrl = SUPABASE_URL,
         supabaseKey = SUPABASE_KEY
     ) {
-        install(Postgrest)
-        install(Storage)
+        install(Postgrest.Companion)
+        install(Storage.Companion)
     }
 }

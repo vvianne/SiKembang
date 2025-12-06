@@ -26,6 +26,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.example.sikembang.data.model.JournalEntry
+import com.example.sikembang.data.repository.JournalRepository
 import kotlinx.coroutines.launch
 import kotlinx.datetime.toJavaInstant // Import untuk konversi waktu
 import java.time.LocalDate

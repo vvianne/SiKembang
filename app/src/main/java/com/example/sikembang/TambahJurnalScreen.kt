@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import coil.compose.rememberAsyncImagePainter
+import com.example.sikembang.data.repository.JournalRepository
 import kotlinx.coroutines.launch
 import java.io.File
 import java.time.LocalDate

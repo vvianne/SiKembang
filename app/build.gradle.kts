@@ -55,6 +55,7 @@ dependencies {
     // DateTime (Pengganti Timestamp Firebase)
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
 
+    // For Maps
     implementation("org.osmdroid:osmdroid-android:6.1.16")
     implementation("com.google.android.gms:play-services-location:21.0.1")
 
@@ -63,6 +64,7 @@ dependencies {
     // Gunakan libs reference untuk Firebase
     implementation(platform("com.google.firebase:firebase-bom:34.6.0"))
     implementation(libs.play.services.location)
+    implementation(libs.play.services.maps)
     androidTestImplementation(platform("com.google.firebase:firebase-bom:34.6.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-firestore-ktx:25.1.1")

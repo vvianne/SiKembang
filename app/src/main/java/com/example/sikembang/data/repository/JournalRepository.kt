@@ -1,17 +1,15 @@
-package com.example.sikembang
+package com.example.sikembang.data.repository
 
 import android.content.Context
 import android.net.Uri
+import com.example.sikembang.data.remote.SupabaseClient
+import com.example.sikembang.data.model.JournalEntry
 import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.postgrest.query.Order
 import io.github.jan.supabase.storage.storage
-import io.github.jan.supabase.storage.upload
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.plus
-import kotlinx.datetime.toInstant
 import kotlinx.datetime.toKotlinInstant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -96,7 +94,7 @@ class JournalRepository(private val context: Context) {
                             lt("tanggal", endOfDay)
                         }
                         // Order by tanggal descending
-                        order("tanggal", io.github.jan.supabase.postgrest.query.Order.DESCENDING)
+                        order("tanggal", Order.DESCENDING)
                     }
                     .decodeList<JournalEntry>()
             }
@@ -112,7 +110,7 @@ class JournalRepository(private val context: Context) {
             val result = withContext(Dispatchers.IO) {
                 client.from("jurnal_sikembang")
                     .select {
-                        order("cretedAt", io.github.jan.supabase.postgrest.query.Order.DESCENDING)
+                        order("cretedAt", Order.DESCENDING)
                     }
                     .decodeList<JournalEntry>()
             }
