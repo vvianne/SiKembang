@@ -70,7 +70,8 @@ fun TambahJurnalScreen(
     var errorMessage by remember { mutableStateOf("") }
 
     val context = LocalContext.current
-    val repository = remember { JournalRepository() }
+//    val repository = remember { JournalRepository() }
+    val repository = remember { JournalRepository(context) }
     val coroutineScope = rememberCoroutineScope()
 
     // Permission launcher

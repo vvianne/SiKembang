@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.0"
 }
 
 android {
@@ -42,6 +43,17 @@ android {
 }
 
 dependencies {
+
+    // Supabase
+    implementation(platform("io.github.jan-tennert.supabase:bom:3.0.0"))
+    implementation("io.github.jan-tennert.supabase:postgrest-kt") // Database
+    implementation("io.github.jan-tennert.supabase:storage-kt")   // Storage (Foto)
+    implementation("io.ktor:ktor-client-android:3.0.0")
+
+    // Serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    // DateTime (Pengganti Timestamp Firebase)
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
 
     implementation("org.osmdroid:osmdroid-android:6.1.16")
     implementation("com.google.android.gms:play-services-location:21.0.1")

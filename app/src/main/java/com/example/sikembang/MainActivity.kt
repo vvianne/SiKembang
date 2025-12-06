@@ -227,25 +227,6 @@ val bannerList = listOf(
 @Composable
 fun BannerSection() {
     val pagerState = androidx.compose.foundation.pager.rememberPagerState(pageCount = { bannerList.size })
-//
-//    val isDraggedState = remember { mutableStateOf(false) }
-//    LaunchedEffect(pagerState) {
-//        pagerState.interactionSource.interactions.collect { interaction ->
-//            when (interaction) {
-//                is DragInteraction.Start -> isDraggedState.value = true
-//                is DragInteraction.Stop, is DragInteraction.Cancel -> isDraggedState.value = false
-//            }
-//        }
-//    }
-//    val isDragged = isDraggedState.value
-//
-//    LaunchedEffect(pagerState.currentPage) {
-//        if (isDragged) return@LaunchedEffect
-//
-//        delay(3000)
-//        val nextPage = (pagerState.currentPage + 1) % bannerList.size
-//        pagerState.animateScrollToPage(nextPage)
-//    }
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -272,12 +253,12 @@ fun BannerSection() {
                     modifier = Modifier.matchParentSize()
                 )
 
-//                // Overlay gelap
-//                Box(
-//                    modifier = Modifier
-//                        .fillMaxSize()
-//                        .background(Color.Black.copy(alpha = 0.3f))
-//                )
+                // Overlay gelap
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.1f))
+                )
 
                 Column(
                     modifier = Modifier

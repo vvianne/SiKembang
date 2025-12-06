@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext // Penting!
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -26,8 +27,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.launch
+import kotlinx.datetime.toJavaInstant // Import untuk konversi waktu
 import java.time.LocalDate
 import java.time.YearMonth
+import java.time.ZoneId
 import java.time.format.TextStyle
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -45,7 +48,9 @@ fun JurnalScreen(
     var journals by remember { mutableStateOf<List<JournalEntry>>(emptyList()) }
     var isLoading by remember { mutableStateOf(false) }
 
-    val repository = remember { JournalRepository() }
+    val context = LocalContext.current
+    val repository = remember { JournalRepository(context) }
+
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(selectedDate) {
@@ -170,9 +175,25 @@ fun JurnalScreen(
                     }
                 }
             } else {
-                // Tampilkan semua jurnal untuk tanggal yang dipilih
                 journals.forEach { journal ->
-                    JournalEntryCard(journal)
+                    JournalEntryCard(
+                        journal = journal,
+                        onDeleteClick = { journalId ->
+                            coroutineScope.launch {
+                                isLoading = true
+                                val deleteResult = repository.deleteJournal(journalId)
+
+                                if (deleteResult.isSuccess) {
+                                    // Refresh data setelah hapus
+                                    val refreshResult = repository.getJournalsByDate(selectedDate)
+                                    if (refreshResult.isSuccess) {
+                                        journals = refreshResult.getOrNull() ?: emptyList()
+                                    }
+                                }
+                                isLoading = false
+                            }
+                        }
+                    )
                     Spacer(modifier = Modifier.height(12.dp))
                 }
             }
@@ -374,9 +395,12 @@ fun CalendarDay(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun JournalEntryCard(journal: JournalEntry) {
+fun JournalEntryCard(
+    journal: JournalEntry,
+    onDeleteClick: (String) -> Unit) {
+
     val dateFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale("id", "ID"))
-    val displayDate = journal.getLocalDate()?.format(dateFormatter) ?: ""
+    val displayDate = journal.getLocalDate().format(dateFormatter)
 
     var showDetailDialog by remember { mutableStateOf(false) }
 
@@ -437,7 +461,9 @@ fun JournalEntryCard(journal: JournalEntry) {
     if (showDetailDialog) {
         JournalDetailDialog(
             journal = journal,
-            onDismiss = { showDetailDialog = false }
+            onDismiss = { showDetailDialog = false },
+            onDelete = { journalId -> onDeleteClick(journalId)
+            }
         )
     }
 }
@@ -463,75 +489,95 @@ fun EntryBulletPointDark(text: String) {
 @Composable
 fun JournalDetailDialog(
     journal: JournalEntry,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onDelete: (String) -> Unit // 1. Tambah Parameter onDelete
 ) {
     val dateFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale("id", "ID"))
-    val displayDate = journal.getLocalDate()?.format(dateFormatter) ?: ""
+    val displayDate = journal.getLocalDate().format(dateFormatter)
 
+    // State untuk memunculkan dialog konfirmasi
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
+
+    // --- DIALOG UTAMA (DETAIL) ---
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = Color.White,
         title = {
-            Text(
-                text = "Detail Jurnal",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = TextDark
-            )
+            Text("Detail Jurnal", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = TextDark)
         },
         text = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
-            ) {
-                Text(
-                    text = displayDate,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = PrimaryPurple
-                )
-
+            Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
+                Text(displayDate, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = PrimaryPurple)
                 Spacer(modifier = Modifier.height(16.dp))
 
-                if (journal.photoUrl.isNotEmpty()) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color.LightGray)
-                    ) {
+                if (journal.fotoURL.isNotEmpty()) {
+                    Box(modifier = Modifier.fillMaxWidth().height(200.dp).clip(RoundedCornerShape(12.dp)).background(Color.LightGray)) {
                         Image(
-                            painter = rememberAsyncImagePainter(journal.photoUrl),
-                            contentDescription = "Foto Perkembangan",
+                            painter = rememberAsyncImagePainter(journal.fotoURL),
+                            contentDescription = "Foto",
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
                         )
                     }
-
                     Spacer(modifier = Modifier.height(16.dp))
                 }
-
-                Text(
-                    text = "Deskripsi Perkembangan",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = TextDark
-                )
+                Text("Deskripsi Perkembangan", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = TextDark)
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = journal.deskripsi,
-                    fontSize = 14.sp,
-                    color = TextDark,
-                    lineHeight = 20.sp
-                )
+                Text(journal.deskripsi, fontSize = 14.sp, color = TextDark, lineHeight = 20.sp)
             }
         },
+        // KITA PAKAI LOGIKA ROW DI SINI BIAR TOMBOLNYA PISAH KIRI-KANAN
         confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Tutup", color = PrimaryPurple, fontWeight = FontWeight.SemiBold)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween // Ini kuncinya: Hapus di Kiri, Tutup di Kanan
+            ) {
+                // Tombol Delete (Merah) di Kiri
+                TextButton(onClick = { showDeleteConfirmation = true }) {
+                    Text("Hapus", color = Color.Red, fontWeight = FontWeight.Bold)
+                }
+
+                // Tombol Tutup (Ungu) di Kanan
+                TextButton(onClick = onDismiss) {
+                    Text("Tutup", color = PrimaryPurple, fontWeight = FontWeight.SemiBold)
+                }
             }
         }
     )
+
+    // --- DIALOG KONFIRMASI HAPUS (Muncul jika showDeleteConfirmation = true) ---
+    if (showDeleteConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmation = false },
+            containerColor = Color.White,
+            title = { Text("Hapus Jurnal?", fontWeight = FontWeight.Bold, color = TextDark) },
+            text = {
+                Text("Apakah Anda yakin ingin menghapus jurnal tanggal $displayDate? Data yang dihapus tidak dapat dikembalikan.")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        // Panggil fungsi delete, lalu tutup semua dialog
+                        journal.id?.let { onDelete(it) }
+                        showDeleteConfirmation = false
+                        onDismiss()
+                    }
+                ) {
+                    Text("Ya, Hapus", color = Color.Red, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirmation = false }) {
+                    Text("Batal", color = TextGray)
+                }
+            }
+        )
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun JournalEntry.getLocalDate(): LocalDate {
+    return this.tanggal.toJavaInstant()
+        .atZone(ZoneId.systemDefault())
+        .toLocalDate()
 }

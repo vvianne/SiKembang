@@ -1,165 +1,157 @@
 package com.example.sikembang
 
+import android.content.Context
 import android.net.Uri
-import android.os.Build
-import androidx.annotation.RequiresApi
-import com.google.firebase.Timestamp
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import com.google.firebase.storage.FirebaseStorage
-import kotlinx.coroutines.tasks.await
+import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.storage.storage
+import io.github.jan.supabase.storage.upload
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.plus
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toKotlinInstant
 import java.time.LocalDate
 import java.time.ZoneId
-import java.util.Date
 import java.util.UUID
 
-class JournalRepository {
-    private val firestore = FirebaseFirestore.getInstance()
-    private val storage = FirebaseStorage.getInstance()
-    private val journalsCollection = firestore.collection("jurnal_Sikembang")
+class JournalRepository(private val context: Context) {
 
-    // 1. Upload Photo
+    private val client = SupabaseClient.client
+
+    // 1. Upload Photo ke Supabase Storage
     suspend fun uploadPhoto(imageUri: Uri): Result<String> {
         return try {
-            val fileName = "journal_photos/${UUID.randomUUID()}.jpg"
-            val storageRef = storage.reference.child(fileName)
+            withContext(Dispatchers.IO) {
+                val fileName = "journal_photos/${UUID.randomUUID()}.jpg"
+                val bucket = client.storage.from("foto_jurnal")
 
-            storageRef.putFile(imageUri).await()
-            val downloadUrl = storageRef.downloadUrl.await()
+                // Baca file dari Uri
+                val inputStream = context.contentResolver.openInputStream(imageUri)
+                val bytes = inputStream?.readBytes() ?: throw Exception("Gagal membaca gambar")
+                inputStream.close()
 
-            Result.success(downloadUrl.toString())
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
+                // Upload
+                bucket.upload(fileName, bytes)
 
-    // -------------------------
-    // GET JOURNAL BY DATE
-    // -------------------------
-    @RequiresApi(Build.VERSION_CODES.O)
-    suspend fun getJournalsByDate(date: LocalDate): Result<List<JournalEntry>> {
-        return try {
-            val startOfDay = Timestamp(
-                Date.from(
-                    date.atStartOfDay(ZoneId.systemDefault()).toInstant()
-                )
-            )
-            val endOfDay = Timestamp(
-                Date.from(
-                    date.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant()
-                )
-            )
-
-            // QUERY DISAMAKAN: pakai field "tanggal"
-            val snapshot = journalsCollection
-                .whereGreaterThanOrEqualTo("tanggal", startOfDay)
-                .whereLessThan("tanggal", endOfDay)
-                .orderBy("tanggal", Query.Direction.DESCENDING)
-                .get()
-                .await()
-
-            val list = snapshot.documents.map { doc ->
-                JournalEntry(
-                    id = doc.id,
-                    date = doc.getTimestamp("tanggal") ?: Timestamp.now(),
-                    dateString = doc.getString("tanggalString") ?: "",
-                    deskripsi = doc.getString("deskripsi") ?: "",
-                    photoUrl = doc.getString("fotoURL") ?: "",
-                    cretedAt = doc.getTimestamp("cretedAt") ?: Timestamp.now()
-                )
+                // Ambil URL Publik
+                val publicUrl = bucket.publicUrl(fileName)
+                Result.success(publicUrl)
             }
-
-            Result.success(list)
         } catch (e: Exception) {
+            e.printStackTrace()
             Result.failure(e)
         }
     }
 
     // 2. Save Journal
-    @RequiresApi(Build.VERSION_CODES.O)
     suspend fun saveJournal(
         date: LocalDate,
         deskripsi: String,
         photoUri: Uri
     ): Result<String> {
         return try {
-            // 1. Upload photo
-            val uploaded = uploadPhoto(photoUri)
-            if (uploaded.isFailure) return Result.failure(uploaded.exceptionOrNull()!!)
-            val photoUrl = uploaded.getOrNull()!!
+            // A. Upload Foto
+            val uploadResult = uploadPhoto(photoUri)
+            if (uploadResult.isFailure) return Result.failure(uploadResult.exceptionOrNull()!!)
+            val photoUrl = uploadResult.getOrNull()!!
 
-            // 2. Convert LocalDate → Timestamp
-            val timestamp = Timestamp(
-                Date.from(
-                    date.atStartOfDay(ZoneId.systemDefault()).toInstant()
-                )
+            // B. Data
+            val instantTanggal = date.atStartOfDay(ZoneId.systemDefault()).toInstant().toKotlinInstant()
+            val instantCreated = Clock.System.now()
+
+            val newEntry = JournalEntry(
+                tanggal = instantTanggal,
+                tanggalString = date.toString(), // format "YYYY-MM-DD"
+                deskripsi = deskripsi,
+                fotoURL = photoUrl,
+                createdAt = instantCreated
             )
 
-            // 3. Create journal entry (DISAMAKAN DENGAN FIRESTORE)
-            val journalEntry = mapOf(
-                "tanggal" to timestamp,
-                "tanggalString" to date.toString(),
-                "deskripsi" to deskripsi,
-                "fotoURL" to photoUrl,
-                "cretedAt" to Timestamp.now()  // sesuai Firestore
-            )
-
-            // 4. Save to Firestore
-            val docRef = journalsCollection.add(journalEntry).await()
-
-            Result.success(docRef.id)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    // 3. Get All Journals
-    @RequiresApi(Build.VERSION_CODES.O)
-    suspend fun getAllJournals(): Result<List<JournalEntry>> {
-        return try {
-            val snapshot = journalsCollection
-                .orderBy("cretedAt", Query.Direction.DESCENDING)
-                .get()
-                .await()
-
-            val list = snapshot.documents.map { doc ->
-                JournalEntry(
-                    id = doc.id,
-                    date = doc.getTimestamp("tanggal") ?: Timestamp.now(),
-                    dateString = doc.getString("tanggalString") ?: "",
-                    deskripsi = doc.getString("deskripsi") ?: "",
-                    photoUrl = doc.getString("fotoURL") ?: "",
-                    cretedAt = doc.getTimestamp("cretedAt") ?: Timestamp.now()
-                )
+            // C. Insert ke Database
+            withContext(Dispatchers.IO) {
+                client.from("jurnal_sikembang").insert(newEntry)
             }
 
-            Result.success(list)
+            Result.success("Berhasil disimpan")
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Result.failure(e)
+        }
+    }
+
+    // 3. Get Journals By Date
+    suspend fun getJournalsByDate(date: LocalDate): Result<List<JournalEntry>> {
+        return try {
+            val startOfDay = date.atStartOfDay(ZoneId.systemDefault()).toInstant().toKotlinInstant()
+            val endOfDay = date.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant().toKotlinInstant()
+
+            val result = withContext(Dispatchers.IO) {
+                client.from("jurnal_sikembang")
+                    .select {
+                        filter {
+                            gte("tanggal", startOfDay)
+                            lt("tanggal", endOfDay)
+                        }
+                        // Order by tanggal descending
+                        order("tanggal", io.github.jan.supabase.postgrest.query.Order.DESCENDING)
+                    }
+                    .decodeList<JournalEntry>()
+            }
+            Result.success(result)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    // 4. Delete Journal
+    // 4. Get All Journals
+    suspend fun getAllJournals(): Result<List<JournalEntry>> {
+        return try {
+            val result = withContext(Dispatchers.IO) {
+                client.from("jurnal_sikembang")
+                    .select {
+                        order("cretedAt", io.github.jan.supabase.postgrest.query.Order.DESCENDING)
+                    }
+                    .decodeList<JournalEntry>()
+            }
+            Result.success(result)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // 5. Delete Journal
     suspend fun deleteJournal(journalId: String): Result<Unit> {
         return try {
-            journalsCollection.document(journalId).delete().await()
+            withContext(Dispatchers.IO) {
+                client.from("jurnal_sikembang").delete {
+                    filter {
+                        eq("id", journalId)
+                    }
+                }
+            }
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    // 5. Update Journal
-    suspend fun updateJournal(
-        journalId: String,
-        deskripsi: String
-    ): Result<Unit> {
+    // 6. Update Journal
+    suspend fun updateJournal(journalId: String, deskripsiBaru: String): Result<Unit> {
         return try {
-            val updates = hashMapOf<String, Any>(
-                "deskripsi" to deskripsi
-            )
-
-            journalsCollection.document(journalId).update(updates).await()
+            withContext(Dispatchers.IO) {
+                client.from("jurnal_sikembang").update(
+                    {
+                        set("deskripsi", deskripsiBaru)
+                    }
+                ) {
+                    filter {
+                        eq("id", journalId)
+                    }
+                }
+            }
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

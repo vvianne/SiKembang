@@ -1,39 +1,25 @@
 package com.example.sikembang
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-import com.google.firebase.Timestamp
-import java.time.LocalDate
-import java.time.ZoneId
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.datetime.Instant
 
+@Serializable
 data class JournalEntry(
-    val id: String = "",
-    val date: Timestamp = Timestamp.now(),
-    val dateString: String = "", // Format: "2025-12-10"
-    val deskripsi: String = "",
-    val photoUrl: String = "",
-    val cretedAt: Timestamp = Timestamp.now()  // ✅ Ubah jadi "cretedAt"
-) {
-    // Konversi Timestamp ke LocalDate
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun getLocalDate(): LocalDate? {
-        return try {
-            date.toDate().toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate()
-        } catch (e: Exception) {
-            null
-        }
-    }
+    val id: String? = null, // ID di-generate otomatis oleh Supabase (UUID)
 
-    // Untuk Firestore (SESUAIKAN dengan field name di Repository)
-    fun toMap(): Map<String, Any> {
-        return hashMapOf(
-            "tanggal" to date,
-            "tanggalString" to dateString,
-            "deskripsi" to deskripsi,
-            "fotoURL" to photoUrl,
-            "cretedAt" to cretedAt           // ✅ Ubah "createdAt" → "cretedAt"
-        )
-    }
-}
+    @SerialName("tanggal")
+    val tanggal: Instant, // Pengganti Timestamp
+
+    @SerialName("tanggalString")
+    val tanggalString: String,
+
+    @SerialName("deskripsi")
+    val deskripsi: String,
+
+    @SerialName("fotoURL")
+    val fotoURL: String,
+
+    @SerialName("cretedAt") // Sesuai typo di screenshot kamu
+    val createdAt: Instant
+)
