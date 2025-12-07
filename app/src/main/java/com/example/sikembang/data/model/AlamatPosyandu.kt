@@ -2,17 +2,14 @@ package com.example.sikembang.data.model
 
 import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.IgnoreExtraProperties
-// PropertyName sudah tidak dibutuhkan lagi untuk field yang kita samakan
 
 @IgnoreExtraProperties
 data class AlamatPosyandu(
     @DocumentId
     var id: String = "",
 
-    // UBAH DARI namaPosyandu JADI nama_posyandu (Hapus @PropertyName)
     var nama_posyandu: String = "",
 
-    // UBAH DARI alamatLengkap JADI alamat_lengkap
     var alamat_lengkap: String = "",
 
     var kelurahan: String = "",
@@ -20,10 +17,8 @@ data class AlamatPosyandu(
     var kota: String = "",
     var provinsi: String = "",
 
-    // UBAH JADI kode_pos
     var kode_pos: String = "",
 
-    // Ini sudah sama, jadi aman
     var latitude: Double? = null,
     var longitude: Double? = null,
 
@@ -31,23 +26,18 @@ data class AlamatPosyandu(
     var email: String = "",
     var keterangan: String = "",
 
-    // UBAH JADI penanggung_jawab
     var penanggung_jawab: String = "",
 
     var rating: Double = 0.0,
 
-    // UBAH JADI jumlah_ulasan
     var jumlah_ulasan: Int = 0,
 
     var status: String = "AKTIF",
 
-    // UBAH JADI jam_operasional
     var jam_operasional: JamOperasional = JamOperasional(),
 
-    // UBAH JADI fasilitas_tersedia
     var fasilitas_tersedia: List<String> = emptyList(),
 
-    // UBAH JADI kegiatan_terbaru
     var kegiatan_terbaru: String = ""
 ) {
     data class JamOperasional(
@@ -73,8 +63,7 @@ data class AlamatPosyandu(
         }
     }
 
-    // --- Helper Functions ---
-    // Update referensi variabel di sini juga
+    // Helper Functions
     fun getAlamatLengkapFormat(): String = "$alamat_lengkap, $kelurahan, $kecamatan, $kota, $provinsi $kode_pos"
 
     fun getJarakFormat(userLat: Double, userLon: Double): String {
@@ -92,7 +81,6 @@ data class AlamatPosyandu(
 
     fun getGoogleMapsUrl(): String = "http://maps.google.com/maps?daddr=${latitude ?: 0.0},${longitude ?: 0.0}"
 
-    // Update referensi nama_posyandu
     fun getGoogleMapsViewUrl(): String = "geo:${latitude ?: 0.0},${longitude ?: 0.0}?q=${latitude ?: 0.0},${longitude ?: 0.0}($nama_posyandu)"
 
     private fun hitungJarak(userLat: Double, userLon: Double): Double {

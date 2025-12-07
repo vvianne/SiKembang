@@ -1,4 +1,4 @@
-package com.example.sikembang.ui.posyandu // Sesuaikan package
+package com.example.sikembang.ui.posyandu
 
 import android.preference.PreferenceManager
 import androidx.compose.foundation.background
@@ -111,7 +111,6 @@ fun PetaScreen(
                                 overlays.add(locationOverlay)
                             }
                         },
-                        // Update Map saat data berubah
                         update = { map ->
                             userLocation?.let { loc ->
                                 val center = GeoPoint(loc.latitude, loc.longitude)

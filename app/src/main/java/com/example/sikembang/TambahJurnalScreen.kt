@@ -71,7 +71,6 @@ fun TambahJurnalScreen(
     var errorMessage by remember { mutableStateOf("") }
 
     val context = LocalContext.current
-//    val repository = remember { JournalRepository() }
     val repository = remember { JournalRepository(context) }
     val coroutineScope = rememberCoroutineScope()
 
@@ -86,7 +85,6 @@ fun TambahJurnalScreen(
         }
     }
 
-    // Check if form is valid
     val isFormValid = deskripsi.isNotBlank() && capturedImageUri != null
 
     // Show Camera Screen

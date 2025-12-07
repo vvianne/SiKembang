@@ -31,19 +31,16 @@ class DetailPosyanduViewModel(
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
 
-    // Fungsi fetch data (Parameter String, bukan Long/Int)
     fun loadPosyanduById(documentId: String) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
                 Log.d("DEBUG_POSYANDU", "Fetching ID: $documentId")
 
-                // Ambil document berdasarkan ID
                 val snapshot = collectionRef.document(documentId).get().await()
 
                 if (snapshot.exists()) {
                     val data = snapshot.toObject(AlamatPosyandu::class.java)
-                    // Pastikan ID terisi (safety net)
                     val fixedData = data?.copy(id = snapshot.id)
                     _selectedPosyandu.value = fixedData
                 } else {
@@ -79,7 +76,6 @@ class DetailPosyanduViewModel(
     }
 }
 
-// FACTORY
 class DetailPosyanduViewModelFactory(
     private val locationHelper: LocationHelper
 ) : ViewModelProvider.Factory {

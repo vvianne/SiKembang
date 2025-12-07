@@ -7,7 +7,7 @@ import kotlinx.coroutines.tasks.await
 
 class PosyanduRepository {
     private val firestore = FirebaseFirestore.getInstance()
-    private val collection = firestore.collection("posyandu_Sikembang") // Pastikan nama SAMA
+    private val collection = firestore.collection("posyandu_Sikembang")
 
     suspend fun getAllPosyandu(): List<AlamatPosyandu> {
         return try {
@@ -16,11 +16,9 @@ class PosyanduRepository {
             val listData = snapshot.documents.mapNotNull { doc ->
                 val posyandu = doc.toObject(AlamatPosyandu::class.java)
 
-                // --- TAMBAHKAN LOG INI ---
                 Log.d("DEBUG_REPO", "ID: ${doc.id}")
-                Log.d("DEBUG_REPO", "Raw Data Firestore: ${doc.data}") // Lihat nama field asli di sini
-                Log.d("DEBUG_REPO", "Hasil Mapping: $posyandu") // Lihat apakah properti terisi atau masih default ("")
-                // -------------------------
+                Log.d("DEBUG_REPO", "Raw Data Firestore: ${doc.data}")
+                Log.d("DEBUG_REPO", "Hasil Mapping: $posyandu")
 
                 posyandu?.copy(id = doc.id)
             }

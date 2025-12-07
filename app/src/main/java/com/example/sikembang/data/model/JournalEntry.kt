@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class JournalEntry(
-    val id: String? = null, // ID di-generate otomatis oleh Supabase (UUID)
+    val id: String? = null,
 
     @SerialName("tanggal")
     val tanggal: Instant,

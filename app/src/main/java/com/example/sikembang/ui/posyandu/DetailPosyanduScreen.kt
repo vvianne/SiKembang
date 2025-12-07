@@ -1,4 +1,4 @@
-package com.example.sikembang.ui.posyandu // Pastikan package ini benar
+package com.example.sikembang.ui.posyandu
 
 import android.content.Intent
 import android.net.Uri
@@ -22,7 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel // Pastikan import ini ada
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sikembang.R
 import com.example.sikembang.PrimaryPurple
 import com.example.sikembang.BackgroundWhite
@@ -41,10 +41,8 @@ fun DetailPosyanduScreen(
 ) {
     val context = LocalContext.current
 
-    // Inisialisasi LocationHelper
     val locationHelper = remember { LocationHelper(context) }
 
-    // Inisialisasi ViewModel MENGGUNAKAN FACTORY (Ini kuncinya biar ga crash!)
     val viewModel: DetailPosyanduViewModel = viewModel(
         factory = DetailPosyanduViewModelFactory(locationHelper)
     )
@@ -53,9 +51,7 @@ fun DetailPosyanduScreen(
     val userLocation by viewModel.userLocation.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
-    // Load data saat layar dibuka (ID posyandu dikirim ke sini)
     LaunchedEffect(posyanduId) {
-        // Panggil fungsi load dengan ID String langsung
         viewModel.loadPosyanduById(posyanduId)
 
         if (userLocation == null) {
@@ -66,7 +62,7 @@ fun DetailPosyanduScreen(
     Scaffold(
         bottomBar = {
             BottomNavigationBar(
-                selectedScreen = "peta", // Tetap highlight 'peta'
+                selectedScreen = "peta",
                 onHomeClick = onNavigateToHome,
                 onJurnalClick = onNavigateToJurnal,
                 onPetaClick = { }
@@ -75,7 +71,6 @@ fun DetailPosyanduScreen(
         containerColor = BackgroundWhite
     ) { paddingValues ->
         if (isLoading) {
-            // Loading di tengah layar
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -85,7 +80,6 @@ fun DetailPosyanduScreen(
                 CircularProgressIndicator(color = PrimaryPurple)
             }
         } else {
-            // Tampilkan Data kalau sudah ada
             selectedPosyandu?.let { posyandu ->
                 LazyColumn(
                     modifier = Modifier
@@ -216,7 +210,6 @@ fun DetailPosyanduScreen(
                     }
                 }
             } ?: run {
-                // Tampilan kalau ID tidak ditemukan / Data Kosong
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text("Data tidak ditemukan", color = TextGray)
                 }

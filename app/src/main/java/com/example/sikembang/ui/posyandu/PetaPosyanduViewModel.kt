@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 class PetaPosyanduViewModel(
     private val locationHelper: LocationHelper,
-    private val repository: PosyanduRepository // Inject Repository di sini
+    private val repository: PosyanduRepository
 ) : ViewModel() {
 
     private val _listPosyandu = MutableStateFlow<List<AlamatPosyandu>>(emptyList())
@@ -33,7 +33,6 @@ class PetaPosyanduViewModel(
     fun loadAllPosyandu() {
         viewModelScope.launch {
             _isLoading.value = true
-            // Panggil Repository, bukan Firestore langsung
             val data = repository.getAllPosyandu()
             _listPosyandu.value = data
             _isLoading.value = false
@@ -61,13 +60,11 @@ class PetaPosyanduViewModel(
     }
 }
 
-// Update Factory agar bisa memasukkan Repository
 class PetaPosyanduViewModelFactory(
     private val locationHelper: LocationHelper
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(PetaPosyanduViewModel::class.java)) {
-            // Kita bikin Repository baru di sini
             val repository = PosyanduRepository()
             @Suppress("UNCHECKED_CAST")
             return PetaPosyanduViewModel(locationHelper, repository) as T
