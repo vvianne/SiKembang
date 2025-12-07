@@ -127,8 +127,8 @@ fun DetailPosyanduScreen(
                             if (!posyandu.email.isNullOrEmpty()) {
                                 DetailRow(Icons.Default.Email, "Email", posyandu.email)
                             }
-                            if (!posyandu.penanggungJawab.isNullOrEmpty()) {
-                                DetailRow(Icons.Default.Person, "Penanggung Jawab", posyandu.penanggungJawab ?: "-")
+                            if (!posyandu.penanggung_jawab.isNullOrEmpty()) {
+                                DetailRow(Icons.Default.Person, "Penanggung Jawab", posyandu.penanggung_jawab ?: "-")
                             }
                         }
                     }
@@ -137,15 +137,15 @@ fun DetailPosyanduScreen(
                     item {
                         SectionCard(title = "Jam Operasional") {
                             // Pass default value jika null
-                            JamOperasionalSection(posyandu.jamOperasional ?: AlamatPosyandu.JamOperasional())
+                            JamOperasionalSection(posyandu.jam_operasional ?: AlamatPosyandu.JamOperasional())
                         }
                     }
 
                     // Item 5: Fasilitas
-                    if (posyandu.fasilitasTersedia.isNotEmpty()) {
+                    if (posyandu.fasilitas_tersedia.isNotEmpty()) {
                         item {
                             SectionCard(title = "Fasilitas Tersedia") {
-                                posyandu.fasilitasTersedia.forEach { fasilitas ->
+                                posyandu.fasilitas_tersedia.forEach { fasilitas ->
                                     Row(
                                         modifier = Modifier.padding(vertical = 4.dp),
                                         verticalAlignment = Alignment.CenterVertically
@@ -160,10 +160,10 @@ fun DetailPosyanduScreen(
                     }
 
                     // Item 6: Kegiatan
-                    if (!posyandu.kegiatanTerbaru.isNullOrEmpty()) {
+                    if (!posyandu.kegiatan_terbaru.isNullOrEmpty()) {
                         item {
                             SectionCard(title = "Kegiatan Terbaru") {
-                                Text(text = posyandu.kegiatanTerbaru, fontSize = 14.sp, color = TextDark)
+                                Text(text = posyandu.kegiatan_terbaru, fontSize = 14.sp, color = TextDark)
                             }
                         }
                     }
@@ -303,7 +303,7 @@ fun HeaderCard(posyandu: AlamatPosyandu, userLocation: android.location.Location
             Box(modifier = Modifier.fillMaxSize().background(PrimaryPurple.copy(alpha = 0.7f)))
             Column(modifier = Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.SpaceBetween) {
                 Column {
-                    Text(posyandu.namaPosyandu, fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                    Text(posyandu.nama_posyandu, fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color.White)
                     Spacer(modifier = Modifier.height(8.dp))
                     Surface(shape = RoundedCornerShape(12.dp), color = Color(posyandu.getStatusColor())) {
                         Text(posyandu.getStatusBuka(), fontSize = 12.sp, color = Color.White, modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp))

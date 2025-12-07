@@ -131,8 +131,8 @@ fun PetaScreen(
                                 if (lat != 0.0 && lng != 0.0) {
                                     val marker = Marker(map)
                                     marker.position = GeoPoint(lat, lng)
-                                    marker.title = posyandu.namaPosyandu
-                                    marker.snippet = posyandu.alamatLengkap
+                                    marker.title = posyandu.nama_posyandu
+                                    marker.snippet = posyandu.alamat_lengkap
                                     marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
 
                                     marker.setOnMarkerClickListener { _, _ ->
@@ -217,10 +217,10 @@ fun PosyanduListItem(data: AlamatPosyandu, onClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(data.namaPosyandu, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextDark)
+                Text(data.nama_posyandu, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextDark)
                 Spacer(modifier = Modifier.height(4.dp))
                 // Pakai alamat dari Supabase
-                Text(data.alamatLengkap ?: "Alamat tidak tersedia", fontSize = 12.sp, color = TextGray)
+                Text(data.alamat_lengkap ?: "Alamat tidak tersedia", fontSize = 12.sp, color = TextGray)
             }
             Icon(Icons.Default.ChevronRight, null, tint = TextDark)
         }

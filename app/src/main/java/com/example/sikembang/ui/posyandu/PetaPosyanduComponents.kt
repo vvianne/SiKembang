@@ -46,7 +46,7 @@ fun PosyanduCard(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = posyandu.namaPosyandu,
+                        text = posyandu.nama_posyandu,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = TextDark,
@@ -89,7 +89,7 @@ fun PosyanduCard(
                             )
                         }
                         Text(
-                            text = "(${posyandu.jumlahUlasan})",
+                            text = "(${posyandu.jumlah_ulasan})",
                             fontSize = 11.sp,
                             color = TextGray
                         )
@@ -109,7 +109,7 @@ fun PosyanduCard(
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = posyandu.alamatLengkap,
+                    text = posyandu.alamat_lengkap,
                     fontSize = 13.sp,
                     color = TextGray,
                     maxLines = 2,
@@ -192,14 +192,14 @@ fun PosyanduCard(
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = "Hari ini: ${posyandu.jamOperasional.getJamHariIni("Senin")}",
+                    text = "Hari ini: ${posyandu.jam_operasional.getJamHariIni("Senin")}",
                     fontSize = 12.sp,
                     color = TextGray
                 )
             }
 
             // Kegiatan Terbaru (jika ada)
-            if (posyandu.kegiatanTerbaru.isNotEmpty()) {
+            if (posyandu.kegiatan_terbaru.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
@@ -218,7 +218,7 @@ fun PosyanduCard(
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = posyandu.kegiatanTerbaru,
+                            text = posyandu.kegiatan_terbaru,
                             fontSize = 12.sp,
                             color = TextDark,
                             maxLines = 2,
@@ -375,7 +375,7 @@ fun PosyanduCompactCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = posyandu.namaPosyandu,
+                    text = posyandu.nama_posyandu,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.weight(1f),

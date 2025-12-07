@@ -13,10 +13,15 @@ class PosyanduRepository {
         return try {
             val snapshot = collection.get().await()
 
-            // Kita map manual agar ID dokumen pasti masuk
             val listData = snapshot.documents.mapNotNull { doc ->
                 val posyandu = doc.toObject(AlamatPosyandu::class.java)
-                // Copy object dan isi ID-nya dari ID dokumen Firestore
+
+                // --- TAMBAHKAN LOG INI ---
+                Log.d("DEBUG_REPO", "ID: ${doc.id}")
+                Log.d("DEBUG_REPO", "Raw Data Firestore: ${doc.data}") // Lihat nama field asli di sini
+                Log.d("DEBUG_REPO", "Hasil Mapping: $posyandu") // Lihat apakah properti terisi atau masih default ("")
+                // -------------------------
+
                 posyandu?.copy(id = doc.id)
             }
 

@@ -2,63 +2,62 @@ package com.example.sikembang.data.model
 
 import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.IgnoreExtraProperties
-import com.google.firebase.firestore.PropertyName
-
-// HAPUS SEMUA import kotlinx.serialization...
+// PropertyName sudah tidak dibutuhkan lagi untuk field yang kita samakan
 
 @IgnoreExtraProperties
 data class AlamatPosyandu(
-    @DocumentId // Ini otomatis diisi ID oleh Firestore
-    val id: String = "", // UBAH JADI STRING (Wajib!)
+    @DocumentId
+    var id: String = "",
 
-    @PropertyName("nama_posyandu")
-    val namaPosyandu: String = "",
+    // UBAH DARI namaPosyandu JADI nama_posyandu (Hapus @PropertyName)
+    var nama_posyandu: String = "",
 
-    @PropertyName("alamat_lengkap")
-    val alamatLengkap: String = "",
+    // UBAH DARI alamatLengkap JADI alamat_lengkap
+    var alamat_lengkap: String = "",
 
-    val kelurahan: String = "",
-    val kecamatan: String = "",
-    val kota: String = "",
-    val provinsi: String = "",
+    var kelurahan: String = "",
+    var kecamatan: String = "",
+    var kota: String = "",
+    var provinsi: String = "",
 
-    @PropertyName("kode_pos")
-    val kodePos: String = "",
+    // UBAH JADI kode_pos
+    var kode_pos: String = "",
 
-    val latitude: Double? = null,
-    val longitude: Double? = null,
-    val telepon: String = "",
-    val email: String = "",
-    val keterangan: String = "",
+    // Ini sudah sama, jadi aman
+    var latitude: Double? = null,
+    var longitude: Double? = null,
 
-    @PropertyName("penanggung_jawab")
-    val penanggungJawab: String = "",
+    var telepon: String = "",
+    var email: String = "",
+    var keterangan: String = "",
 
-    val rating: Double = 0.0,
+    // UBAH JADI penanggung_jawab
+    var penanggung_jawab: String = "",
 
-    @PropertyName("jumlah_ulasan")
-    val jumlahUlasan: Int = 0,
+    var rating: Double = 0.0,
 
-    val status: String = "AKTIF",
+    // UBAH JADI jumlah_ulasan
+    var jumlah_ulasan: Int = 0,
 
-    @PropertyName("jam_operasional")
-    val jamOperasional: JamOperasional = JamOperasional(),
+    var status: String = "AKTIF",
 
-    @PropertyName("fasilitas_tersedia")
-    val fasilitasTersedia: List<String> = emptyList(),
+    // UBAH JADI jam_operasional
+    var jam_operasional: JamOperasional = JamOperasional(),
 
-    @PropertyName("kegiatan_terbaru")
-    val kegiatanTerbaru: String = ""
+    // UBAH JADI fasilitas_tersedia
+    var fasilitas_tersedia: List<String> = emptyList(),
+
+    // UBAH JADI kegiatan_terbaru
+    var kegiatan_terbaru: String = ""
 ) {
-    // Class ini harus punya empty constructor (default value sudah cukup)
     data class JamOperasional(
-        val senin: String = "Tutup",
-        val selasa: String = "Tutup",
-        val rabu: String = "Tutup",
-        val kamis: String = "Tutup",
-        val jumat: String = "Tutup",
-        val sabtu: String = "Tutup",
-        val minggu: String = "Tutup"
+        var senin: String = "Tutup",
+        var selasa: String = "Tutup",
+        var rabu: String = "Tutup",
+        var kamis: String = "Tutup",
+        var jumat: String = "Tutup",
+        var sabtu: String = "Tutup",
+        var minggu: String = "Tutup"
     ) {
         fun getJamHariIni(hari: String): String {
             return when(hari.lowercase()) {
@@ -74,8 +73,9 @@ data class AlamatPosyandu(
         }
     }
 
-    // --- Helper Functions (JANGAN DIHAPUS) ---
-    fun getAlamatLengkapFormat(): String = "$alamatLengkap, $kelurahan, $kecamatan, $kota, $provinsi $kodePos"
+    // --- Helper Functions ---
+    // Update referensi variabel di sini juga
+    fun getAlamatLengkapFormat(): String = "$alamat_lengkap, $kelurahan, $kecamatan, $kota, $provinsi $kode_pos"
 
     fun getJarakFormat(userLat: Double, userLon: Double): String {
         val jarak = hitungJarak(userLat, userLon)
@@ -90,17 +90,20 @@ data class AlamatPosyandu(
         return "$waktuMenit min"
     }
 
-    fun getGoogleMapsUrl(): String = "http://maps.google.com/maps?daddr=$latitude,$longitude"
+    fun getGoogleMapsUrl(): String = "http://maps.google.com/maps?daddr=${latitude ?: 0.0},${longitude ?: 0.0}"
 
-    fun getGoogleMapsViewUrl(): String = "geo:$latitude,$longitude?q=$latitude,$longitude($namaPosyandu)"
+    // Update referensi nama_posyandu
+    fun getGoogleMapsViewUrl(): String = "geo:${latitude ?: 0.0},${longitude ?: 0.0}?q=${latitude ?: 0.0},${longitude ?: 0.0}($nama_posyandu)"
 
     private fun hitungJarak(userLat: Double, userLon: Double): Double {
-        if (latitude == null || longitude == null) return Double.MAX_VALUE
+        val lat = latitude
+        val lon = longitude
+        if (lat == null || lon == null) return Double.MAX_VALUE
         val earthRadius = 6371.0
-        val dLat = Math.toRadians(latitude - userLat)
-        val dLon = Math.toRadians(longitude - userLon)
+        val dLat = Math.toRadians(lat - userLat)
+        val dLon = Math.toRadians(lon - userLon)
         val a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(Math.toRadians(userLat)) * Math.cos(Math.toRadians(latitude)) *
+                Math.cos(Math.toRadians(userLat)) * Math.cos(Math.toRadians(lat)) *
                 Math.sin(dLon / 2) * Math.sin(dLon / 2)
         val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
         return earthRadius * c
