@@ -1,47 +1,21 @@
 package com.example.sikembang.data.repository
 
-<<<<<<< HEAD
-import android.util.Log
-import com.example.sikembang.data.model.AlamatPosyandu
-import com.google.firebase.firestore.FirebaseFirestore
-=======
 import com.example.sikembang.data.model.AlamatPosyandu
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
->>>>>>> 65cd3496fad4a1263fda411b766c9e950f185f69
 import kotlinx.coroutines.tasks.await
 
 class PosyanduRepository {
     private val firestore = FirebaseFirestore.getInstance()
-<<<<<<< HEAD
-    private val collection = firestore.collection("posyandu_Sikembang") // Pastikan nama SAMA
-
-    suspend fun getAllPosyandu(): List<AlamatPosyandu> {
-        return try {
-            val snapshot = collection.get().await()
-
-            // Kita map manual agar ID dokumen pasti masuk
-            val listData = snapshot.documents.mapNotNull { doc ->
-                val posyandu = doc.toObject(AlamatPosyandu::class.java)
-                // Copy object dan isi ID-nya dari ID dokumen Firestore
-                posyandu?.copy(id = doc.id)
-            }
-
-            Log.d("REPO_FIREBASE", "Repository fetch success: ${listData.size} items")
-            listData
-        } catch (e: Exception) {
-            Log.e("REPO_FIREBASE", "Error fetch: ${e.message}")
-            emptyList()
-=======
-    private val collection = firestore.collection("posyandu_lokasi")
+    private val collection = firestore.collection("posyandu_Sikembang")
 
     fun getAllPosyandu(): Flow<List<AlamatPosyandu>> = callbackFlow {
         val listener = collection
             .whereEqualTo("status", "AKTIF")
-            .orderBy("namaPosyandu", Query.Direction.ASCENDING)
+            .orderBy("nama_posyandu", Query.Direction.ASCENDING)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     close(error)
@@ -49,7 +23,11 @@ class PosyanduRepository {
                 }
 
                 val posyanduList = snapshot?.documents?.mapNotNull { doc ->
-                    doc.toObject(AlamatPosyandu::class.java)
+                    try {
+                        doc.toObject(AlamatPosyandu::class.java)?.copy(id = doc.id)
+                    } catch (e: Exception) {
+                        null
+                    }
                 } ?: emptyList()
 
                 trySend(posyanduList)
@@ -61,7 +39,7 @@ class PosyanduRepository {
     suspend fun getPosyanduById(id: String): Result<AlamatPosyandu?> {
         return try {
             val doc = collection.document(id).get().await()
-            val posyandu = doc.toObject(AlamatPosyandu::class.java)
+            val posyandu = doc.toObject(AlamatPosyandu::class.java)?.copy(id = doc.id)
             Result.success(posyandu)
         } catch (e: Exception) {
             Result.failure(e)
@@ -80,7 +58,13 @@ class PosyanduRepository {
                 .await()
 
             val posyanduList = snapshot.documents
-                .mapNotNull { it.toObject(AlamatPosyandu::class.java) }
+                .mapNotNull { doc ->
+                    try {
+                        doc.toObject(AlamatPosyandu::class.java)?.copy(id = doc.id)
+                    } catch (e: Exception) {
+                        null
+                    }
+                }
                 .sortedBy { it.getJarakDari(userLat, userLon) }
                 .take(limit)
 
@@ -89,7 +73,6 @@ class PosyanduRepository {
             Result.failure(e)
         }
     }
-
 
     suspend fun searchPosyandu(
         query: String,
@@ -103,7 +86,13 @@ class PosyanduRepository {
                 .await()
 
             var posyanduList = snapshot.documents
-                .mapNotNull { it.toObject(AlamatPosyandu::class.java) }
+                .mapNotNull { doc ->
+                    try {
+                        doc.toObject(AlamatPosyandu::class.java)?.copy(id = doc.id)
+                    } catch (e: Exception) {
+                        null
+                    }
+                }
                 .filter { posyandu ->
                     posyandu.namaPosyandu.contains(query, ignoreCase = true) ||
                             posyandu.alamatLengkap.contains(query, ignoreCase = true) ||
@@ -121,7 +110,6 @@ class PosyanduRepository {
         }
     }
 
-
     suspend fun getPosyanduByKecamatan(
         kecamatan: String,
         userLat: Double? = null,
@@ -135,7 +123,13 @@ class PosyanduRepository {
                 .await()
 
             var posyanduList = snapshot.documents
-                .mapNotNull { it.toObject(AlamatPosyandu::class.java) }
+                .mapNotNull { doc ->
+                    try {
+                        doc.toObject(AlamatPosyandu::class.java)?.copy(id = doc.id)
+                    } catch (e: Exception) {
+                        null
+                    }
+                }
 
             if (userLat != null && userLon != null) {
                 posyanduList = posyanduList.sortedBy { it.getJarakDari(userLat, userLon) }
@@ -158,7 +152,13 @@ class PosyanduRepository {
                 .await()
 
             var posyanduList = snapshot.documents
-                .mapNotNull { it.toObject(AlamatPosyandu::class.java) }
+                .mapNotNull { doc ->
+                    try {
+                        doc.toObject(AlamatPosyandu::class.java)?.copy(id = doc.id)
+                    } catch (e: Exception) {
+                        null
+                    }
+                }
                 .filter { it.isSedangBuka() }
 
             if (userLat != null && userLon != null) {
@@ -179,7 +179,13 @@ class PosyanduRepository {
                 .await()
 
             val kecamatanList = snapshot.documents
-                .mapNotNull { it.toObject(AlamatPosyandu::class.java) }
+                .mapNotNull { doc ->
+                    try {
+                        doc.toObject(AlamatPosyandu::class.java)
+                    } catch (e: Exception) {
+                        null
+                    }
+                }
                 .map { it.kecamatan }
                 .distinct()
                 .sorted()
@@ -189,7 +195,6 @@ class PosyanduRepository {
             Result.failure(e)
         }
     }
-
 
     suspend fun tambahPosyandu(posyandu: AlamatPosyandu): Result<String> {
         return try {
@@ -202,17 +207,14 @@ class PosyanduRepository {
         }
     }
 
-
     suspend fun updatePosyandu(posyandu: AlamatPosyandu): Result<Unit> {
         return try {
-            val updatedPosyandu = posyandu.copy(updatedAt = System.currentTimeMillis())
-            collection.document(posyandu.id).set(updatedPosyandu).await()
+            collection.document(posyandu.id).set(posyandu).await()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
-
 
     suspend fun deletePosyandu(id: String): Result<Unit> {
         return try {
@@ -220,7 +222,6 @@ class PosyanduRepository {
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
->>>>>>> 65cd3496fad4a1263fda411b766c9e950f185f69
         }
     }
 }
