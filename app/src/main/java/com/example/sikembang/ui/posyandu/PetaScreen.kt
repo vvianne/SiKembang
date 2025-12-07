@@ -39,7 +39,7 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 @Composable
 fun PetaScreen(
-    onNavigateToDetail: (String) -> Unit, // Tambah ini buat navigasi
+    onNavigateToDetail: (String) -> Unit,
     onNavigateToHome: () -> Unit,
     onNavigateToJurnal: () -> Unit
 ) {
@@ -53,8 +53,8 @@ fun PetaScreen(
     }
 
     // 2. Panggil ViewModel
-    val viewModel: PetaViewModel = viewModel(
-        factory = PetaViewModelFactory(locationHelper)
+    val viewModel: PetaPosyanduViewModel = viewModel(
+        factory = PetaPosyanduViewModelFactory(locationHelper)
     )
 
     val listPosyandu by viewModel.listPosyandu.collectAsState()
@@ -64,7 +64,7 @@ fun PetaScreen(
     // 3. Load Data
     LaunchedEffect(Unit) {
         viewModel.getCurrentLocation()
-        viewModel.getAllPosyandu()
+        viewModel.loadAllPosyandu()
     }
 
     Scaffold(
@@ -201,7 +201,7 @@ fun SearchBarPeta() {
     ) {
         Icon(Icons.Default.Search, "Search", tint = TextGray)
         Spacer(modifier = Modifier.width(8.dp))
-        Text("Cari Posyandu...", color = TextGray)
+        Text("Cari Posyandu", color = TextGray)
     }
 }
 

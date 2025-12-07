@@ -55,7 +55,9 @@ fun DetailPosyanduScreen(
 
     // Load data saat layar dibuka (ID posyandu dikirim ke sini)
     LaunchedEffect(posyanduId) {
+        // Panggil fungsi load dengan ID String langsung
         viewModel.loadPosyanduById(posyanduId)
+
         if (userLocation == null) {
             viewModel.getCurrentLocation()
         }

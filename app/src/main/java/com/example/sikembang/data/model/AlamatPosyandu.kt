@@ -1,16 +1,20 @@
 package com.example.sikembang.data.model
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import com.google.firebase.firestore.DocumentId
+import com.google.firebase.firestore.IgnoreExtraProperties
+import com.google.firebase.firestore.PropertyName
 
-@Serializable
+// HAPUS SEMUA import kotlinx.serialization...
+
+@IgnoreExtraProperties
 data class AlamatPosyandu(
-    val id: Long? = null,
+    @DocumentId // Ini otomatis diisi ID oleh Firestore
+    val id: String = "", // UBAH JADI STRING (Wajib!)
 
-    @SerialName("nama_posyandu")
+    @PropertyName("nama_posyandu")
     val namaPosyandu: String = "",
 
-    @SerialName("alamat_lengkap")
+    @PropertyName("alamat_lengkap")
     val alamatLengkap: String = "",
 
     val kelurahan: String = "",
@@ -18,7 +22,7 @@ data class AlamatPosyandu(
     val kota: String = "",
     val provinsi: String = "",
 
-    @SerialName("kode_pos")
+    @PropertyName("kode_pos")
     val kodePos: String = "",
 
     val latitude: Double? = null,
@@ -27,27 +31,26 @@ data class AlamatPosyandu(
     val email: String = "",
     val keterangan: String = "",
 
-    @SerialName("penanggung_jawab")
+    @PropertyName("penanggung_jawab")
     val penanggungJawab: String = "",
 
     val rating: Double = 0.0,
 
-    @SerialName("jumlah_ulasan")
+    @PropertyName("jumlah_ulasan")
     val jumlahUlasan: Int = 0,
 
     val status: String = "AKTIF",
 
-    @SerialName("jam_operasional")
+    @PropertyName("jam_operasional")
     val jamOperasional: JamOperasional = JamOperasional(),
 
-    @SerialName("fasilitas_tersedia")
+    @PropertyName("fasilitas_tersedia")
     val fasilitasTersedia: List<String> = emptyList(),
 
-    @SerialName("kegiatan_terbaru")
+    @PropertyName("kegiatan_terbaru")
     val kegiatanTerbaru: String = ""
 ) {
-
-    @Serializable
+    // Class ini harus punya empty constructor (default value sudah cukup)
     data class JamOperasional(
         val senin: String = "Tutup",
         val selasa: String = "Tutup",
@@ -71,14 +74,12 @@ data class AlamatPosyandu(
         }
     }
 
-    fun getAlamatLengkapFormat(): String {
-        return "$alamatLengkap, $kelurahan, $kecamatan, $kota, $provinsi $kodePos"
-    }
+    // --- Helper Functions (JANGAN DIHAPUS) ---
+    fun getAlamatLengkapFormat(): String = "$alamatLengkap, $kelurahan, $kecamatan, $kota, $provinsi $kodePos"
 
     fun getJarakFormat(userLat: Double, userLon: Double): String {
         val jarak = hitungJarak(userLat, userLon)
-        return if (jarak == Double.MAX_VALUE) "Tidak tersedia"
-        else String.format("%.1f km", jarak)
+        return if (jarak == Double.MAX_VALUE) "Tidak tersedia" else String.format("%.1f km", jarak)
     }
 
     fun getEstimasiWaktu(userLat: Double, userLon: Double): String {
@@ -89,13 +90,9 @@ data class AlamatPosyandu(
         return "$waktuMenit min"
     }
 
-    fun getGoogleMapsUrl(): String {
-        return "http://maps.google.com/maps?daddr=$latitude,$longitude"
-    }
+    fun getGoogleMapsUrl(): String = "http://maps.google.com/maps?daddr=$latitude,$longitude"
 
-    fun getGoogleMapsViewUrl(): String {
-        return "geo:$latitude,$longitude?q=$latitude,$longitude($namaPosyandu)"
-    }
+    fun getGoogleMapsViewUrl(): String = "geo:$latitude,$longitude?q=$latitude,$longitude($namaPosyandu)"
 
     private fun hitungJarak(userLat: Double, userLon: Double): Double {
         if (latitude == null || longitude == null) return Double.MAX_VALUE
@@ -109,11 +106,6 @@ data class AlamatPosyandu(
         return earthRadius * c
     }
 
-    fun getStatusBuka(): String {
-        return if (status == "AKTIF") "Buka" else "Tutup"
-    }
-
-    fun getStatusColor(): Long {
-        return if (status == "AKTIF") 0xFF4CAF50 else 0xFFF44336
-    }
+    fun getStatusBuka(): String = if (status == "AKTIF") "Buka" else "Tutup"
+    fun getStatusColor(): Long = if (status == "AKTIF") 0xFF4CAF50 else 0xFFF44336
 }
